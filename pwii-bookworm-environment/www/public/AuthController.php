@@ -6,6 +6,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Bookworm\Services\TwigRenderer;
 use Bookworm\Services\AuthService;
+use Psr\Http\Message\UploadedFileInterface;
+use Exception;
+
 
 
 
@@ -142,5 +145,119 @@ class AuthController
             return $response->withHeader('Location', '/')->withStatus(302);
         }
     }
+
+    public function showProfile(Request $request, Response $response)
+    {
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+        
+        $user = $this->authService->getCurrentUser();
+        
+        if (!$user->getUsername()) {
+            $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'flashyMessages' => 'Update your username!']);
+            $response->getBody()->write($content);
+            return $response;
+        }
+        
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user]);
+        $response->getBody()->write($content);
+        return $response;
+    }
+
+    public function updateProfile(Request $request, Response $response)
+    {
+        
+
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+
+        $user = $this->authService->getCurrentUser();
+
+        $data = $request->getParsedBody();
+        $email = $data['email'];
+        $username = $data['username'];
+
+        if (!empty($email) && $email !== $user->getEmail()) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "The email address is not valid.";
+            } elseif ($this->authService->getUserByEmail($email)) {
+                $errors[] = "The email address is already registered.";
+            } else {
+                $success = $this->authService->updateEmail($user->getId(), $email);
+                if (!$success) {
+                    $errors[] = "Failed to update email. Please try again later.";
+                }
+            }
+        }
+
+        if (!empty($username) && $username !== $user->getUsername()) {
+            $existingUser = $this->authService->getUserByUsername($username);
+            if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                $errors[] = "The username is already taken.";
+            } else {
+                $success = $this->authService->updateUsername($user->getId(), $username);
+                if (!$success) {
+                    $errors[] = "Failed to update username. Please try again later.";
+                }
+            }
+        }
+
+        $uploadedFiles = $request->getUploadedFiles();
+        $profilePicture = $uploadedFiles['profile_picture'] ?? null;
+
+        if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
+            $uploadPath = __DIR__ . '/../uploads';
+            $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
+            if ($fileName) {
+                $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
+                if (!$success) {
+                    $errors[] = "Failed to update profile picture. Please try again later.";
+                }
+            } else {
+                $errors[] = "Failed to upload profile picture. Please try again later.";
+            }
+        }
+
+        $queryParams = $errors ? ['errors' => $errors] : ['success' => true];
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'queryParams' => $queryParams]);
+        $response->getBody()->write($content);
+        return $response;
+    }
+
+    private function uploadProfilePicture(UploadedFileInterface $file, string $uploadPath): ?string
+    {
+        if ($file->getSize() > 1048576) {
+            return null;
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+        $fileExtension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+        if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+            return null;
+        }
+
+        $image = getimagesize($file->getStream()->getMetadata('uri'));
+        $width = $image[0];
+        $height = $image[1];
+        if ($width > 400 || $height > 400) {
+            return null;
+        }
+
+        $uuid = uniqid();
+        $newFilename = "{$uuid}.{$fileExtension}";
+
+        try {
+            $file->moveTo("$uploadPath/$newFilename");
+            return $newFilename;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+
 
 }

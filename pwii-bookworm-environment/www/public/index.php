@@ -44,5 +44,7 @@ $app->post('/sign-up', [$authController, 'signUp']);
 $app->get('/sign-in', [$authController, 'showSignInForm']);
 $app->post('/sign-in', [$authController, 'signIn']);
 $app->post('/logout', [$authController, 'logout']);
+$app->get('/profile', [$authController, 'showProfile']);
+$app->post('/profile', [$authController, 'updateProfile']);
 
 $app->run();

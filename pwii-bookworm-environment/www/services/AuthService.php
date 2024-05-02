@@ -24,7 +24,6 @@ class AuthService
     public function getCurrentUser(): ?User
     {
         if ($this->isLoggedIn()) {
-            session_start();
             $userId = $_SESSION['user_id'];
             $user = $this->getUserById($userId);
             return $user;
@@ -78,6 +77,14 @@ class AuthService
         return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
     }
 
+    public function getUserByUsername(string $username): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username = :username");
+        $stmt->execute(['username' => $username]);
+        $user = $stmt->fetch();
+        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
+    }
+
     public function getUserByEmail(string $email): ?User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
@@ -85,4 +92,29 @@ class AuthService
         $user = $stmt->fetch();
         return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
     }
+
+    public function updateProfilePicture(int $userId, string $filename): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :filename WHERE id = :id");
+        $success = $stmt->execute(['filename' => $filename, 'id' => $userId]);
+
+        return $success;
+    }
+
+    public function updateEmail(int $userId, string $email): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET email = :email WHERE id = :id");
+        $success = $stmt->execute(['email' => $email, 'id' => $userId]);
+
+        return $success;
+    }
+
+    public function updateUsername(int $userId, string $username): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET username = :username WHERE id = :id");
+        $success = $stmt->execute(['username' => $username, 'id' => $userId]);
+
+        return $success;
+    }
+
 }
