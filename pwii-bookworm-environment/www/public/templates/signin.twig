@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+</head>
+<body>
+    <h1>Sign In</h1>
+    <form action="/sign-in" method="post" data-cy="sign-in">
+        {% if errors is defined and errors %}
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ data.email ?? '' }}" required data-cy="sign-in__email">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required data-cy="sign-in__password">
+        </div>
+        <button type="submit" data-cy="sign-in__btn">Sign In</button>
+    </form>
+</body>
+</html>
