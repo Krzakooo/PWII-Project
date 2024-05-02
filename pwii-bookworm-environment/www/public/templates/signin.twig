@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Sign In</h1>
+    {% include 'menu.twig' %}
     <form action="/sign-in" method="post" data-cy="sign-in">
         {% if errors is defined and errors %}
             <ul>

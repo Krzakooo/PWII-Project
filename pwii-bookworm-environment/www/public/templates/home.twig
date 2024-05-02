@@ -8,12 +8,7 @@
 <body>
     <h1>Welcome to Bookworm</h1>
     <p>Discover, rate, and discuss your favorite books!</p>
-    <a href="/sign-in">Sign In</a>
-    <a href="/sign-up">Sign Up</a>
-    {% if isLoggedIn %}
-        <form action="/logout" method="post">
-            <button type="submit">Logout</button>
-        </form>
-    {% endif %}
+    {% include 'menu.twig' %}
+
 </body>
 </html>
