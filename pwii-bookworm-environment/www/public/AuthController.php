@@ -156,15 +156,26 @@ class AuthController
         $user = $this->authService->getCurrentUser();
         
         if (!$user->getUsername()) {
-            $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'flashyMessages' => 'Update your username!']);
+            $content = $this->twig->render('profile.twig', [
+                'currentUser' => $user,
+                'flashyMessages' => 'Update your username!'
+            ]);
             $response->getBody()->write($content);
             return $response;
         }
         
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user]);
+        // Get profile picture URL
+        $profilePictureUrl = $user->getProfilePicture();
+
+        // Pass profile picture URL to Twig template
+        $content = $this->twig->render('profile.twig', [
+            'currentUser' => $user,
+            'profilePictureUrl' => $profilePictureUrl
+        ]);
         $response->getBody()->write($content);
         return $response;
     }
+
 
     public function updateProfile(Request $request, Response $response)
     {
@@ -180,7 +191,7 @@ class AuthController
         $data = $request->getParsedBody();
         $email = $data['email'];
         $username = $data['username'];
-
+        $errors = [];
         if (!empty($email) && $email !== $user->getEmail()) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = "The email address is not valid.";
@@ -222,8 +233,9 @@ class AuthController
             }
         }
 
-        $queryParams = $errors ? ['errors' => $errors] : ['success' => true];
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'queryParams' => $queryParams]);
+        $user = $this->authService->getCurrentUser();
+
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true]);
         $response->getBody()->write($content);
         return $response;
     }

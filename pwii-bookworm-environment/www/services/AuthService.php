@@ -93,10 +93,10 @@ class AuthService
         return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
     }
 
-    public function updateProfilePicture(int $userId, string $filename): bool
+    public function updateProfilePicture(int $userId, string $profile_picture): bool
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :filename WHERE id = :id");
-        $success = $stmt->execute(['filename' => $filename, 'id' => $userId]);
+        $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
+        $success = $stmt->execute(['profile_picture' => $profile_picture, 'id' => $userId]);
 
         return $success;
     }

@@ -8,14 +8,26 @@
 <body>
     <h1>User Profile</h1>
     {% if flashyMessages %}
-            <h2>{{ flashyMessages }}</h2>
+            <h2 style="color: red;">{{ flashyMessages }}</h2>
     {% endif %}
-    {% if queryParams %}
-        <ul>
-            {% for param in queryParams %}
-                <li>{{ param }}</li>
+
+    {% if errors %}
+        <div style="color: red;">
+            {% for error in errors %}
+                <p>{{ error }}</p>
             {% endfor %}
-        </ul>
+        </div>
+
+    {% else %}
+        {% if post %}
+            <div style="color: green;">Profile updated successfully!</div>
+        {% endif %}
+    {% endif %}
+
+    {% if profilePictureUrl %}
+        <img src="{{ profilePictureUrl }}" alt="Profile Picture">
+    {% else %}
+        <p>No profile picture available</p>
     {% endif %}
     
     {% if currentUser %}
