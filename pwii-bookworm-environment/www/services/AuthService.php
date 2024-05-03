@@ -74,7 +74,7 @@ class AuthService
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
         $stmt->execute(['id' => $id]);
         $user = $stmt->fetch();
-        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
+        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username'], $user['profile_picture']) : null;
     }
 
     public function getUserByUsername(string $username): ?User
@@ -82,7 +82,7 @@ class AuthService
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username = :username");
         $stmt->execute(['username' => $username]);
         $user = $stmt->fetch();
-        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
+        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username'], $user['profile_picture']) : null;
     }
 
     public function getUserByEmail(string $email): ?User
@@ -90,12 +90,13 @@ class AuthService
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
-        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username']) : null;
+        return $user ? new User($user['id'], $user['email'], $user['password'], $user['username'], $user['profile_picture']) : null;
     }
 
     public function updateProfilePicture(int $userId, string $profile_picture): bool
     {
         $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
+        $profile_picture = "uploads/" . $profile_picture;
         $success = $stmt->execute(['profile_picture' => $profile_picture, 'id' => $userId]);
 
         return $success;

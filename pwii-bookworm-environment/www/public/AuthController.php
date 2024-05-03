@@ -164,14 +164,9 @@ class AuthController
             return $response;
         }
         
-        // Get profile picture URL
         $profilePictureUrl = $user->getProfilePicture();
 
-        // Pass profile picture URL to Twig template
-        $content = $this->twig->render('profile.twig', [
-            'currentUser' => $user,
-            'profilePictureUrl' => $profilePictureUrl
-        ]);
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'profilePictureUrl' => $profilePictureUrl]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -221,7 +216,7 @@ class AuthController
         $profilePicture = $uploadedFiles['profile_picture'] ?? null;
 
         if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
-            $uploadPath = __DIR__ . '/../uploads';
+            $uploadPath = __DIR__ . '/uploads';
             $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
             if ($fileName) {
                 $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
@@ -234,8 +229,9 @@ class AuthController
         }
 
         $user = $this->authService->getCurrentUser();
+        $profilePictureUrl = $user->getProfilePicture();
 
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true]);
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true, 'profilePictureUrl' => $profilePictureUrl]);
         $response->getBody()->write($content);
         return $response;
     }
