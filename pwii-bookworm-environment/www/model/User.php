@@ -10,7 +10,7 @@ class User
     private $username;
     private $profilePicture;
 
-    public function __construct(int $id = null, string $email = '', string $password = '', string $username = '', string $profilePicture = '')
+    public function __construct(int $id = null, string $email = '', string $password = '', string $username = '', ?string $profilePicture = null)
     {
         $this->id = $id;
         $this->email = $email;
