@@ -2,23 +2,23 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
-require_once 'AuthController.php';
-require_once 'HomeController.php';
+require_once '../controller/AuthController.php';
+require_once '../controller/HomeController.php';
 require_once '../services/AuthService.php';
 require_once '../services/TwigRenderer.php';
 require_once '../config/dependencies.php';
 
+use Bookworm\controller\AuthController;
+use Bookworm\controller\HomeController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use Bookworm\Controllers\AuthController;
-use Bookworm\Controllers\HomeController;
-use Bookworm\Services\AuthService;
-use Bookworm\Services\TwigRenderer;
-use Bookworm\Dependencies;
+use Bookworm\service\AuthService;
+use Bookworm\service\TwigRenderer;
+use Bookworm\dependencies;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment as Twig;
-use Selective\BasePath\BasePathMiddleware;
+//use Selective\BasePath\BasePathMiddleware;
 
 $app = AppFactory::create();
 
@@ -31,7 +31,7 @@ $twigRenderer = new TwigRenderer();
 $loader = new FilesystemLoader(__DIR__ . '/templates');
 $twig = new Twig($loader);
 
-$pdo = Dependencies::connect();
+$pdo = dependencies::connect();
 $authService = new AuthService($pdo);
 
 $authController = new AuthController($twigRenderer, $authService);

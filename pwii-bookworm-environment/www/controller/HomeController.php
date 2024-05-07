@@ -1,10 +1,10 @@
 <?php
 
-namespace Bookworm\Controllers;
-require_once '../models/User.php';
+namespace Bookworm\controller;
+require_once '../model/User.php';
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Bookworm\Services\TwigRenderer;
+use Bookworm\service\TwigRenderer;
 
 class HomeController
 {
@@ -15,7 +15,7 @@ class HomeController
         $this->twig = $twig;
     }
 
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): Response
     {
         session_start();
         

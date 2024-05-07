@@ -1,6 +1,6 @@
 <?php
 
-namespace Bookworm\Services;
+namespace Bookworm\service;
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;

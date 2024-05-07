@@ -1,18 +1,15 @@
 <?php
 
-namespace Bookworm\Controllers;
-require_once '../models/User.php';
+namespace Bookworm\controller;
+
+require_once '../model/User.php';
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Bookworm\Services\TwigRenderer;
-use Bookworm\Services\AuthService;
+use Bookworm\service\TwigRenderer;
+use Bookworm\service\AuthService;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
-
-
-
-
-
 
 class AuthController
 {
@@ -25,67 +22,64 @@ class AuthController
         $this->authService = $authService;
     }
 
-    public function showSignInForm(Request $request, Response $response)
+    public function showSignInForm(Request $request, Response $response): Response
     {
         session_start();
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
-        
+
         $content = $this->twig->render('signin.twig', []);
         $response->getBody()->write($content);
         return $response;
     }
 
-    public function signIn(Request $request, Response $response)
-        {
-            $data = $request->getParsedBody();
-            $email = $data['email'];
-            $password = $data['password'];
+    public function signIn(Request $request, Response $response): Response
+    {
+        $data = $request->getParsedBody();
+        $email = $data['email'];
+        $password = $data['password'];
 
-            $errors = [];
+        $errors = [];
 
-            if (empty($email)) {
-                $errors[] = "The email field is required.";
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = "The email address is not valid.";
-            }
-
-            if (!empty($errors)) {
-                $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
-                $response->getBody()->write($content);
-                return $response;
-            }
-
-            if ($this->authService->login($email, $password)) {
-                $user = $this->authService->getUserByEmail($email);
-                session_start();
-                $_SESSION['user_id'] = $user->getId();
-                return $response->withHeader('Location', '/')->withStatus(302);
-
-            } else {
-                $errors[] = "The email address or password is incorrect.";
-                $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
-                $response->getBody()->write($content);
-                return $response;
-            }
+        if (empty($email)) {
+            $errors[] = "The email field is required.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "The email address is not valid.";
         }
 
+        if (!empty($errors)) {
+            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
+            $response->getBody()->write($content);
+            return $response;
+        }
 
+        if ($this->authService->login($email, $password)) {
+            $user = $this->authService->getUserByEmail($email);
+            session_start();
+            $_SESSION['user_id'] = $user->getId();
+            return $response->withHeader('Location', '/')->withStatus(302);
+        } else {
+            $errors[] = "The email address or password is incorrect.";
+            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
+            $response->getBody()->write($content);
+            return $response;
+        }
+    }
 
-    public function showSignUpForm(Request $request, Response $response)
+    public function showSignUpForm(Request $request, Response $response): Response
     {
         session_start();
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
-        
+
         $content = $this->twig->render('signup.twig', []);
         $response->getBody()->write($content);
         return $response;
     }
 
-    public function signUp(Request $request, Response $response)
+    public function signUp(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
         $email = $data['email'];
@@ -119,12 +113,18 @@ class AuthController
             return $response;
         }
 
+        // Create new user using AuthService's createUser method
         $user = $this->authService->signUp($email, $password, $username);
 
         if ($user) {
             session_start();
             $_SESSION['user_id'] = $user->getId();
-            return $response->withHeader('Location', '/')->withStatus(302);
+
+            // Set flash message
+            $_SESSION['flash_message'] = "You are now signed up, welcome to your site";
+
+            // Redirect to profile page
+            return $response->withHeader('Location', '/profile')->withStatus(302);
         } else {
             $errors[] = "An account with this email address already exists.";
             $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data]);
@@ -133,11 +133,11 @@ class AuthController
         }
     }
 
-    public function logout(Request $request, Response $response)
+    public function logout(Request $request, Response $response): Response
     {
         session_start();
         if (isset($_SESSION['user_id'])) {
-            
+
             $this->authService->logout();
 
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
@@ -146,15 +146,15 @@ class AuthController
         }
     }
 
-    public function showProfile(Request $request, Response $response)
+    public function showProfile(Request $request, Response $response): Response
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
-        
+
         $user = $this->authService->getCurrentUser();
-        
+
         if (!$user->getUsername()) {
             $content = $this->twig->render('profile.twig', [
                 'currentUser' => $user,
@@ -163,7 +163,7 @@ class AuthController
             $response->getBody()->write($content);
             return $response;
         }
-        
+
         $profilePictureUrl = $user->getProfilePicture();
 
         $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'profilePictureUrl' => $profilePictureUrl]);
@@ -171,11 +171,8 @@ class AuthController
         return $response;
     }
 
-
-    public function updateProfile(Request $request, Response $response)
+    public function updateProfile(Request $request, Response $response): Response
     {
-        
-
         session_start();
         if (!isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
@@ -265,7 +262,4 @@ class AuthController
             return null;
         }
     }
-
-
-
 }

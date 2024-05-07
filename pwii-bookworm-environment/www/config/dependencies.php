@@ -5,9 +5,9 @@ namespace Bookworm;
 
 use PDO;
 
-class Dependencies
+class dependencies
 {
-    public static function connect()
+    public static function connect(): PDO
     {
         $config = require_once 'database.php';
 

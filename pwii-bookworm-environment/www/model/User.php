@@ -1,6 +1,6 @@
 <?php
 
-namespace Bookworm\Models;
+namespace Bookworm\model;
 
 class User
 {
@@ -16,7 +16,7 @@ class User
         $this->email = $email;
         $this->password = $password;
         $this->username = $username;
-        $this->profilePicture = $profilePicture;
+        $this->profilePicture = $profilePicture ?? ''; // Defaulting to an empty string if null
     }
 
     public function getId(): int

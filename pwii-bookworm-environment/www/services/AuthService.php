@@ -1,11 +1,11 @@
 <?php
 
-namespace Bookworm\Services;
+namespace Bookworm\service;
 
-require_once '../models/User.php';
+require_once '../model/User.php';
 
 use PDO;
-use Bookworm\Models\User;
+use Bookworm\model\User;
 
 class AuthService
 {
@@ -53,17 +53,16 @@ class AuthService
     public function signUp(string $email, string $password, string $username): ?User
     {
 
-        
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-       
         $stmt = $this->pdo->prepare("INSERT INTO users (email, password, username) VALUES (:email, :password, :username)");
         $stmt->execute(['email' => $email, 'password' => $hashedPassword, 'username' => $username]);
 
-        
         if ($stmt->rowCount() > 0) {
             $userId = $this->pdo->lastInsertId();
-            return new User($userId, $email, $hashedPassword, $username);
+
+            $profilePicture = 'default.jpg';
+            return new User($userId, $email, $hashedPassword, $username, $profilePicture);
         }
 
         return null;
