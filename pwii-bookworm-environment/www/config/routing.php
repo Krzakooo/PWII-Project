@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Bookworm\controller\ForumController;
+use Bookworm\service\ForumService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -16,6 +18,7 @@ require_once '../controller/HomeController.php';
 require_once '../services/AuthService.php';
 require_once '../services/TwigRenderer.php';
 require_once '../config/dependencies.php';
+require_once '../services/ForumService.php';
 
 $app = AppFactory::create();
 
@@ -28,11 +31,15 @@ $twigRenderer = new TwigRenderer();
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
 $twig = new \Twig\Environment($loader);
 $pdo = Dependencies::connect();
+
+//Services
 $authService = new AuthService($pdo);
+$forumService = new ForumService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
+$forumController = new ForumController($twigRenderer, $forumService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -63,5 +70,23 @@ $app->get('/profile', function (Request $request, Response $response, $args) use
 $app->post('/profile', function (Request $request, Response $response, $args) use ($authController) {
     return $authController->updateProfile($request, $response, $args);
 });
+
+//Routing to Discuss Forum
+$app->get('/forums', function (Request $request, Response $response, $args) use ($forumController) {
+    return $forumController->showForums($request, $response);
+});
+
+$app->post('/forums', function (Request $request, Response $response, $args) use ($forumController) {
+    return $forumController->createForum($request, $response);
+});
+
+$app->get('/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
+    return $forumController->showForum($request, $response, $args);
+});
+
+$app->delete('/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
+    return $forumController->deleteForum($request, $response, $args);
+});
+
 
 $app->run();
