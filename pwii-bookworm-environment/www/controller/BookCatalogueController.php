@@ -34,7 +34,7 @@ class BookCatalogueController
         ]);
     }
 
-    public funtion addBookToCatalogue(Request $request, Response $response): Response
+    public function addBookToCatalogue(Request $request, Response $response): Response
     {
         $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
@@ -42,8 +42,8 @@ class BookCatalogueController
             // If not authenticated, redirect to sign-in page
             return $this->twig->render($response, 'signin.twig');
         }
-
-        render $this->twig->render($response, 'createBookForm.twig', [
+        //modiify return
+        // render $this->twig->render($response, 'createBookForm.twig', [
 
     }
 

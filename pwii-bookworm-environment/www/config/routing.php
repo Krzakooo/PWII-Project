@@ -13,6 +13,7 @@ use Bookworm\Dependencies;
 require __DIR__ . '/../vendor/autoload.php';
 require_once '../controller/AuthController.php';
 require_once '../controller/HomeController.php';
+require_once '../controller/BookCatalogueController.php';
 require_once '../services/AuthService.php';
 require_once '../services/TwigRenderer.php';
 require_once '../config/dependencies.php';
@@ -33,6 +34,7 @@ $authService = new AuthService($pdo);
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
+$bookCatalogueController = new BookCatalogueController($twigRenderer);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -62,6 +64,17 @@ $app->get('/profile', function (Request $request, Response $response, $args) use
 });
 $app->post('/profile', function (Request $request, Response $response, $args) use ($authController) {
     return $authController->updateProfile($request, $response, $args);
+});
+
+$app->get('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
+    return $bookCatalogueController->showAddBookForm($request, $response, $args);
+});
+$app->post('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
+    return $bookCatalogueController->addBookToCatalogue($request, $response, $args);
+});
+
+$app->post('/catalogue/{id}', function (Request $request, Response $response, $args) use ($authController) {
+    return $bookCatalogueController->updateProfile($request, $response, $args);
 });
 
 $app->run();
