@@ -47,6 +47,20 @@ class BookCatalogueController
 
     }
 
+    public function showBookDetails(Request $request, Response $response, $args)
+    {
+        // Get book ID from route parameters
+        $bookId = $args['id'];
+
+        // Fetch book details from database or API based on the ID
+        $book = $this->getBookDetails($bookId);
+
+        // Render Twig template with book details
+        return $this->twig->render($response, 'book_details.twig', [
+            'book' => $book,
+        ]);
+    }
+
     private function fetchBooks(): array
     {
 
