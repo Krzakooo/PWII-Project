@@ -1,16 +1,19 @@
 <?php
 
-namespace Salle\LSCryptoNews\Controller;
+namespace Bookworm\controller;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
+use Bookworm\service\TwigRenderer;
+use Bookworm\model\Book;
 
 class BookCatalogueController
 {
-    private Twig $twig;
+    private $twig;
+    private Book $book;
 
-    public function __construct(Twig $twig)
+    public function __construct(TwigRenderer $twig)
     {
         $this->twig = $twig;
     }
@@ -34,7 +37,7 @@ class BookCatalogueController
         ]);
     }
 
-    public function addBookToCatalogue(Request $request, Response $response): Response
+    public function addBookToCatalogue(Request $request, Response $response, Book $book): Response
     {
         $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
@@ -45,6 +48,17 @@ class BookCatalogueController
         //modiify return
         // render $this->twig->render($response, 'createBookForm.twig', [
 
+    }
+
+    private function getBookDetails($bookId)
+    {
+        // Example: Fetch book details from database or API based on $bookId
+        // Assuming you have a Book model
+        // Example usage of Book model to fetch details from database
+        $book = Book::find($bookId); // Assuming this is an Eloquent model
+
+        // Return the fetched book
+        return $book;
     }
 
     public function showBookDetails(Request $request, Response $response, $args)
@@ -60,6 +74,51 @@ class BookCatalogueController
             'book' => $book,
         ]);
     }
+
+    function handleImportForm($isbn)
+    {
+        // Send GET request to OpenLibrary API
+        $url = "https://openlibrary.org/isbn/{$isbn}.json";
+        $response = file_get_contents($url);
+
+        // Check if response is valid
+        if ($response === false) {
+            // Handle error
+            return false;
+        }
+
+        // Parse JSON response
+        $bookData = json_decode($response, true);
+
+        // Extract relevant information
+        $title = $bookData['title'];
+        $pages = $bookData['number_of_pages'];
+        $workIdentifier = $bookData['works'][0]['key'];
+        $coverId = $bookData['covers'][0];
+
+        $workUrl = "https://openlibrary.org{$workIdentifier}.json";
+        $workResponse = file_get_contents($workUrl);
+        $workData = json_decode($workResponse, true);
+        $description = $workData['description'];
+
+        $authorIdentifier = $workData['authors'][0]['key'];
+        $authorUrl = "https://openlibrary.org{$authorIdentifier}.json";
+        $authorResponse = file_get_contents($authorUrl);
+        $authorData = json_decode($authorResponse, true);
+        $authorName = $authorData['name'];
+
+        $coverUrl = "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg";
+
+        // Create Book object
+        $book = new Book($title, $authorName, $description, $pages, $coverUrl);
+
+        // Optionally, validate data and add book to database
+        // addBookToDatabase($book);
+
+        return $book;
+
+    }
+
 
     private function fetchBooks(): array
     {

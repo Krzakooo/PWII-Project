@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Bookworm\Controller\AuthController;
 use Bookworm\Controller\HomeController;
+use Bookworm\controller\BookCatalogueController;
 use Bookworm\service\AuthService;
 use Bookworm\service\TwigRenderer;
 use Bookworm\Dependencies;

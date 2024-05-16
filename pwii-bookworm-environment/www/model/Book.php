@@ -1,5 +1,7 @@
 <?php
 
+namespace Bookworm\model;
+
 class Book
 {
     private $title;
