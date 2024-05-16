@@ -70,7 +70,7 @@ class BookCatalogueController
         $book = $this->getBookDetails($bookId);
 
         // Render Twig template with book details
-        return $this->twig->render($response, 'book_details.twig', [
+        return $this->twig->render('bookdetails.twig', [
             'book' => $book,
         ]);
     }
@@ -83,7 +83,6 @@ class BookCatalogueController
 
         // Check if response is valid
         if ($response === false) {
-            // Handle error
             return false;
         }
 

@@ -93,14 +93,15 @@ $app->delete('/forums/{id}', function (Request $request, Response $response, $ar
 
 
 $app->get('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
+$app->get('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
     return $bookCatalogueController->showAddBookForm($request, $response, $args);
 });
-$app->post('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
+$app->post('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
     return $bookCatalogueController->addBookToCatalogue($request, $response, $args);
 });
 
-$app->post('/catalogue/{id}', function (Request $request, Response $response, $args) use ($authController) {
-    return $bookCatalogueController->updateProfile($request, $response, $args);
+$app->post('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->handleImportForm($request);
 });
 
 $app->run();
