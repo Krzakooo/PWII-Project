@@ -5,9 +5,9 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once '../controller/AuthController.php';
 require_once '../controller/HomeController.php';
 require_once '../controller/ForumController.php';
-require_once '../services/AuthService.php';
-require_once '../services/TwigRenderer.php';
-require_once '../services/ForumService.php';
+require_once '../service/AuthService.php';
+require_once '../service/TwigRenderer.php';
+require_once '../service/ForumService.php';
 require_once '../config/dependencies.php';
 
 use Bookworm\controller\AuthController;
@@ -49,9 +49,10 @@ $app->get('/profile', [$authController, 'showProfile']);
 $app->post('/profile', [$authController, 'updateProfile']);
 
 // Routing for Discussion Forum
-$app->get('/forums', [$forumController, 'showForums']);
-$app->post('/forums', [$forumController, 'createForum']);
-$app->get('/forums/{id}', [$forumController, 'showForum']);
-$app->delete('/forums/{id}', [$forumController, 'deleteForum']);
+$app->get('/forums', [$forumController, 'getAllForums']);
+$app->get('/api/forums', [$forumController, 'getAllForums']);
+$app->post('/api/forums', [$forumController, 'updateForum']);
+$app->get('/api/forums/{id}', [$forumController, 'getForumById']);
+$app->delete('/api/forums/{id}', [$forumController, 'deleteForum']);
 
 $app->run();

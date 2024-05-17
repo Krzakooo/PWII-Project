@@ -4,42 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forums</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        /* Style for modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 5% from the top, centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Forums</h1>
+<h1>Forum List</h1>
 
-<div id="forums-list">
+<!-- Forum List -->
+<ul>
     {% for forum in forums %}
-        <div>
-            <h3>{{ forum.title }}</h3>
-            <p>{{ forum.description }}</p>
-        </div>
+        <li>
+            <strong>{{ forum.title }}</strong> - {{ forum.description }}
+            <form id="deleteForm-{{ forum.id }}" method="post" action="/api/forums/{{ forum.id }}" style="display: none;">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" id="deleteBtn-{{ forum.id }}">Confirm Delete</button>
+            </form>
+            <a href="#" class="delete-btn" data-forum-id="{{ forum.id }}">Delete</a>
+            <a href="#" class="edit-link" data-id="{{ forum.id }}">Edit</a>
+        </li>
     {% endfor %}
-</div>
+</ul>
 
-<h2>Create New Forum</h2>
-<form id="create-forum-form">
+<!-- Create Forum Form -->
+<form method="post" action="/forums">
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required><br>
-    <label for="description">Description:</label>
+    <label for="description">Description:</label><br>
     <textarea id="description" name="description" required></textarea><br>
     <button type="submit">Create Forum</button>
 </form>
 
+<!-- Edit Forum Modal -->
+<div id="editModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Forum</h2>
+        <form id="editForm" method="post" action="/api/forums/update">
+            <input type="hidden" id="editId" name="id">
+            <label for="editTitle">Title:</label>
+            <input type="text" id="editTitle" name="title" required><br>
+            <label for="editDescription">Description:</label><br>
+            <textarea id="editDescription" name="description" required></textarea><br>
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</div>
+
 <script>
-    document.getElementById('create-forum-form').addEventListener('submit', function(event) {
+    document.getElementById('editForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData(this);
-        axios.post('{{ path_for('createForum') }}', formData)
+        const forumId = formData.get('id');
+
+        fetch(`/api/forums/${forumId}`, {
+            method: 'POST',
+            body: formData
+        })
             .then(response => {
-                console.log('Forum created successfully:', response.data);
-                location.reload();
+                if (response.ok) {
+                    window.location.href = '/forums';
+                } else {
+                    console.error('Failed to update forum:', response.statusText);
+                }
             })
-            .catch(error => {
-                console.error('Error creating forum:', error);
-            });
+            .catch(error => console.error('Error updating forum:', error));
+    });
+
+    // Get the modal
+    const modal = document.getElementById('editModal');
+
+    // Get the <span> element that closes the modal
+    const span = document.getElementsByClassName("close")[0];
+
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    // Handle form submission for creating a new forum
+    document.getElementById('createForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/api/forums', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/forums'; // Redirect to /forums after successful creation
+                } else {
+                    console.error('Failed to create forum:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error creating forum:', error));
+    });
+
+    const deleteLinks = document.querySelectorAll('.delete-btn');
+    deleteLinks.forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            const forumId = this.getAttribute('data-forum-id');
+            if (confirm("Are you sure you want to delete this forum?")) {
+                fetch(`/api/forums/${forumId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert("Failed to delete forum.");
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
     });
 </script>
+
 </body>
 </html>

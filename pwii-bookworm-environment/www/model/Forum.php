@@ -1,6 +1,6 @@
 <?php
 
-namespace Bookworm\Model;
+namespace Bookworm\model;
 
 class Forum
 {

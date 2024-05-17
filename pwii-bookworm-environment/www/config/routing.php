@@ -17,10 +17,10 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once '../controller/AuthController.php';
 require_once '../controller/HomeController.php';
 require_once '../controller/BookCatalogueController.php';
-require_once '../services/AuthService.php';
-require_once '../services/TwigRenderer.php';
+require_once '../service/AuthService.php';
+require_once '../service/TwigRenderer.php';
 require_once '../config/dependencies.php';
-require_once '../services/ForumService.php';
+require_once '../service/ForumService.php';
 
 $app = AppFactory::create();
 
@@ -37,6 +37,7 @@ $pdo = Dependencies::connect();
 //Services
 $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
+
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
@@ -74,25 +75,34 @@ $app->post('/profile', function (Request $request, Response $response, $args) us
     return $authController->updateProfile($request, $response, $args);
 });
 
-//Routing to Discuss Forum
-$app->get('/forums', function (Request $request, Response $response, $args) use ($forumController) {
-    return $forumController->showForums($request, $response);
+// Routing to Discuss Forum
+$app->get('/forums', function (Request $request, Response $response) use ($forumController) {
+     return $forumController->getAllForums($request, $response);
 });
 
-$app->post('/forums', function (Request $request, Response $response, $args) use ($forumController) {
+$app->get('api/forums', function (Request $request, Response $response) use ($forumController) {
     return $forumController->createForum($request, $response);
 });
 
-$app->get('/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
-    return $forumController->showForum($request, $response, $args);
+$app->post('/api/forums', function (Request $request, Response $response, $args) use ($forumController) {
+    $forumId = $args['id'];
+    $data = $request->getParsedBody();
+    return $forumController->updateForum($request, $response, $forumId, $data);
 });
 
-$app->delete('/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
+$app->get('api/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
+    return $forumController->getForumById($request, $response, $args);
+});
+
+$app->delete('api/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
     return $forumController->deleteForum($request, $response, $args);
 });
 
-
+//Book Catalogue
 $app->get('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
+
+});
+
 $app->get('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
     return $bookCatalogueController->showAddBookForm($request, $response, $args);
 });
