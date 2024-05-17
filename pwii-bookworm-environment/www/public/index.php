@@ -51,7 +51,7 @@ $app->post('/profile', [$authController, 'updateProfile']);
 // Routing for Discussion Forum
 $app->get('/forums', [$forumController, 'getAllForums']);
 $app->get('/api/forums', [$forumController, 'getAllForums']);
-$app->post('/api/forums', [$forumController, 'updateForum']);
+$app->post('/api/forums', [$forumController, 'createForum']);
 $app->get('/api/forums/{id}', [$forumController, 'getForumById']);
 $app->delete('/api/forums/{id}', [$forumController, 'deleteForum']);
 

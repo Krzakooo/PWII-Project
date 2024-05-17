@@ -40,16 +40,6 @@ class ForumService
         }
     }
 
-    public function updateForum(int $id, array $data): bool
-    {
-        $statement = $this->pdo->prepare('UPDATE forums SET title = :title, description = :description WHERE id = :id');
-        return $statement->execute([
-            'id' => $id,
-            'title' => $data['title'],
-            'description' => $data['description']
-        ]);
-    }
-
     public function deleteForum(int $id): bool
     {
         $statement = $this->pdo->prepare('DELETE FROM forums WHERE id = :id');

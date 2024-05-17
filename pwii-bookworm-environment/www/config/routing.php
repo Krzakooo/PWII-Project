@@ -81,13 +81,11 @@ $app->get('/forums', function (Request $request, Response $response) use ($forum
 });
 
 $app->get('api/forums', function (Request $request, Response $response) use ($forumController) {
-    return $forumController->createForum($request, $response);
+    return $forumController->getAllForums($request, $response);
 });
 
-$app->post('/api/forums', function (Request $request, Response $response, $args) use ($forumController) {
-    $forumId = $args['id'];
-    $data = $request->getParsedBody();
-    return $forumController->updateForum($request, $response, $forumId, $data);
+$app->post('api/forums', function (Request $request, Response $response) use ($forumController) {
+    return $forumController->createForum($request, $response);
 });
 
 $app->get('api/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {

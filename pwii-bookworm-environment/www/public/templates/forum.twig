@@ -49,7 +49,7 @@
 <h1>Forum List</h1>
 
 <!-- Forum List -->
-<ul>
+<ul id="forumList">
     {% for forum in forums %}
         <li>
             <strong>{{ forum.title }}</strong> - {{ forum.description }}
@@ -64,7 +64,7 @@
 </ul>
 
 <!-- Create Forum Form -->
-<form method="post" action="/forums">
+<form id="createForm" method="post" action="/forums">
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required><br>
     <label for="description">Description:</label><br>
@@ -78,7 +78,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Edit Forum</h2>
-        <form id="editForm" method="post" action="/api/forums/update">
+        <form id="editForm" method="post" action="/forums">
             <input type="hidden" id="editId" name="id">
             <label for="editTitle">Title:</label>
             <input type="text" id="editTitle" name="title" required><br>
@@ -90,6 +90,7 @@
 </div>
 
 <script>
+
     document.getElementById('editForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData(this);
@@ -139,12 +140,25 @@
         })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/forums'; // Redirect to /forums after successful creation
+                    return response.json(); // Parse the response JSON
                 } else {
                     console.error('Failed to create forum:', response.statusText);
+                    throw new Error('Failed to create forum');
                 }
             })
-            .catch(error => console.error('Error creating forum:', error));
+            .then(data => {
+                // Show the create forum form
+                document.getElementById('createForm').style.display = 'block';
+
+                // Add the new forum to the list
+                const forumList = document.getElementById('forumList');
+                const newForum = document.createElement('li');
+                newForum.innerHTML = `<strong>${data.title}</strong> - ${data.description}`;
+                forumList.appendChild(newForum);
+
+                // Reload the page to refresh the forum list
+                window.location.reload();
+            })
     });
 
     const deleteLinks = document.querySelectorAll('.delete-btn');
@@ -167,6 +181,7 @@
             }
         });
     });
+
 </script>
 
 </body>

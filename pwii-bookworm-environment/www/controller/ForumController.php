@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Bookworm\service\ForumService;
 use Bookworm\service\TwigRenderer;
 use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Psr7\Response as SlimResponse;
 
 class ForumController
 {
@@ -37,17 +38,21 @@ class ForumController
             $data = $request->getParsedBody();
             $this->forumService->createForum($data);
 
-            $htmlContent = $this->twigRenderer->render('forum.twig', ['message' => 'Forum created successfully']);
+            $responseData = [
+                'message' => 'Forum created successfully'
+            ];
 
-            $responseFactory = new ResponseFactory();
-            $htmlResponse = $responseFactory->createResponse();
-            $htmlResponse->getBody()->write($htmlContent);
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode($responseData));
+            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
 
-            return $htmlResponse->withHeader('Content-Type', 'text/html')->withStatus(201);
+            return $jsonResponse->withStatus(201);
         } catch (\Exception $e) {
-            return $htmlResponse->withHeader('Content-Type', 'text/html')->withStatus(500);
+            return $jsonResponse->withStatus(500);
         }
     }
+
+
 
 
     public function deleteForum(Request $request, Response $response, array $args): Response
@@ -76,32 +81,6 @@ class ForumController
                 $responseData = json_encode(['error' => 'Forum not found']);
                 $response->getBody()->write($responseData);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-            }
-        } catch (\Exception $e) {
-            $responseData = json_encode(['error' => $e->getMessage()]);
-            $response->getBody()->write($responseData);
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
-
-    public function updateForum(Request $request, Response $response, array $args): Response
-    {
-        try {
-            $forumId = $args['id'];
-            $data = $request->getParsedBody();
-            if ($this->forumService->updateForum($forumId, $data)) {
-                $updatedForum = $this->forumService->getForumById($forumId);
-                $htmlContent = $this->twigRenderer->render('forum.twig', ['forum' => $updatedForum]);
-
-                $responseFactory = new ResponseFactory();
-                $htmlResponse = $responseFactory->createResponse();
-                $htmlResponse->getBody()->write($htmlContent);
-
-                return $htmlResponse->withHeader('Content-Type', 'text/html');
-            } else {
-                $responseData = json_encode(['error' => 'Failed to update forum']);
-                $response->getBody()->write($responseData);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
         } catch (\Exception $e) {
             $responseData = json_encode(['error' => $e->getMessage()]);
