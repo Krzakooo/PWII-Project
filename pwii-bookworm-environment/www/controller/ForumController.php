@@ -52,9 +52,6 @@ class ForumController
         }
     }
 
-
-
-
     public function deleteForum(Request $request, Response $response, array $args): Response
     {
         try {
