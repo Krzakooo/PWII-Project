@@ -5,80 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forums</title>
     <style>
-        /* Style for modal */
+        /* Reset default browser styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Centered container */
+        .centered-container {
+            max-width: 800px; /* Added */
+            margin: 0 auto; /* Added */
+        }
+
+        /* Header styles */
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Forum list styles */
+        #forumList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #forumList li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        #forumList li strong {
+            display: block;
+            font-size: 1.4em; /* Større skriftstørrelse for titlen */
+            font-weight: bold; /* Tykkere skrift for titlen */
+            margin-bottom: 10px;
+        }
+
+        #forumList li p {
+            font-size: 1.2em; /* Mindre skriftstørrelse for beskrivelsen */
+            margin-bottom: 10px; /* Added */
+        }
+
+        /* Button styles */
+        .forum-btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .forum-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Form styles */
+        form {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px; /* Added */
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px); /* Adjusted */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Modal styles */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
             padding-top: 60px;
         }
 
-        /* Modal content */
         .modal-content {
             background-color: #fefefe;
-            margin: 5% auto; /* 5% from the top, centered */
+            margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 80%;
+            text-align: center;
         }
 
-        /* Close button */
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .close:hover,
         .close:focus {
             color: black;
             text-decoration: none;
-            cursor: pointer;
         }
+
+        .custom-btn {
+            background-color: #8a2be2;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
     </style>
 </head>
 <body>
-<h1>Forum List</h1>
+<div class="centered-container">
+    <h1>Forum List</h1>
 
-<!-- Forum List -->
-<ul id="forumList">
-    {% for forum in forums %}
-        <li>
-            <strong>{{ forum.title }}</strong> - {{ forum.description }}
-            <form id="deleteForm-{{ forum.id }}" method="post" action="/api/forums/{{ forum.id }}" style="display: none;">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" id="deleteBtn-{{ forum.id }}">Confirm Delete</button>
+    <!-- Forum List -->
+    <ul id="forumList">
+        {% for forum in forums %}
+            <li>
+                <strong>{{ forum.title }}</strong>
+                <p>{{ forum.description }}</p>
+                <form id="deleteForm-{{ forum.id }}" method="post" action="/api/forums/{{ forum.id }}"
+                      style="display: none;">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" id="deleteBtn-{{ forum.id }}">Confirm Delete</button>
+                </form>
+                <a href="#" class="delete-btn custom-btn" data-forum-id="{{ forum.id }}">Delete</a>
+                <a href="/forums/{{ forum.id }}/posts" class="custom-btn">Go to Forum</a>
+
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Create Forum Button -->
+    <button class="custom-btn" id="openCreateFormBtn">Create Forum</button>
+
+    <!-- Create Forum Modal -->
+    <div id="createFormModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create Forum</h2>
+            <form id="createForm" method="post" action="/forums">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required><br>
+                <label for="description">Description:</label><br>
+                <textarea id="description" name="description" required></textarea><br>
+                <button type="submit">Create Forum</button>
             </form>
-            <a href="#" class="delete-btn" data-forum-id="{{ forum.id }}">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
-
-<!-- Create Forum Button -->
-<button id="openCreateFormBtn">Create Forum</button>
-
-<!-- Create Forum Modal -->
-<div id="createFormModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Create Forum</h2>
-        <form id="createForm" method="post" action="/forums">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required><br>
-            <label for="description">Description:</label><br>
-            <textarea id="description" name="description" required></textarea><br>
-            <button type="submit">Create Forum</button>
-        </form>
+        </div>
     </div>
 </div>
+
 <script>
 
     // Get the <span> element that closes the modal
@@ -97,7 +221,7 @@
     };
 
     // Create new Forum
-    document.getElementById('createForm').addEventListener('submit', function(event) {
+    document.getElementById('createForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const formData = new FormData(this);
 
@@ -159,17 +283,17 @@
     const closeCreateFormBtn = document.getElementsByClassName('close')[0];
 
     // When the user clicks the button, open the modal
-    openCreateFormBtn.onclick = function() {
+    openCreateFormBtn.onclick = function () {
         createFormModal.style.display = "block";
     }
 
     // When the user clicks on <span> (x), close the modal
-    closeCreateFormBtn.onclick = function() {
+    closeCreateFormBtn.onclick = function () {
         createFormModal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target === createFormModal) {
             createFormModal.style.display = "none";
         }
