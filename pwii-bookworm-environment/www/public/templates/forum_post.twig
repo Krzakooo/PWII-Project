@@ -24,8 +24,7 @@
         {% else %}
             {% for post in posts %}
                 <li>
-                    <h3>{{ post.title }}</h3>
-                    <p>{{ post.contents }}</p>
+                    <p>{{ post.content }}</p>
                 </li>
             {% endfor %}
         {% endif %}

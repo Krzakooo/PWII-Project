@@ -42,7 +42,7 @@ $forumPostService = new ForumPostService($pdo);
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$forumPostController = new ForumPostController($twigRenderer, $forumPostService);
+$forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService);
 
 $app->get('/', [$homeController, 'index']);
 

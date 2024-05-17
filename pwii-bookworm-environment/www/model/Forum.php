@@ -17,7 +17,6 @@ class Forum
         $this->posts = $posts;
     }
 
-    // Getters
     public function getId(): int
     {
         return $this->id;
@@ -53,4 +52,10 @@ class Forum
     {
         $this->posts[] = $post;
     }
+
+    public function setPosts(array $posts): void
+    {
+        $this->posts[] = $posts;
+    }
+
 }
