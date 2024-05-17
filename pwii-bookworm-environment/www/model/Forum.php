@@ -7,12 +7,14 @@ class Forum
     private int $id;
     private string $title;
     private string $description;
+    private array $posts;
 
-    public function __construct(int $id, string $title, string $description)
+    public function __construct(int $id, string $title, string $description, array $posts)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
+        $this->posts = $posts;
     }
 
     // Getters
@@ -31,6 +33,12 @@ class Forum
         return $this->description;
     }
 
+    public function getPosts(): array
+    {
+        return $this->posts;
+    }
+
+    // Setters
     public function setTitle(string $title): void
     {
         $this->title = $title;
@@ -41,4 +49,8 @@ class Forum
         $this->description = $description;
     }
 
+    public function addPost(Post $post): void
+    {
+        $this->posts[] = $post;
+    }
 }

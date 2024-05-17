@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 use Bookworm\controller\ForumController;
+use Bookworm\controller\ForumPostController;
+use Bookworm\service\ForumPostService;
 use Bookworm\service\ForumService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -21,6 +23,7 @@ require_once '../service/AuthService.php';
 require_once '../service/TwigRenderer.php';
 require_once '../config/dependencies.php';
 require_once '../service/ForumService.php';
+require_once '../service/ForumPostService.php';
 
 $app = AppFactory::create();
 
@@ -37,13 +40,14 @@ $pdo = Dependencies::connect();
 //Services
 $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
-
+$forumPostService = new ForumPostService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $bookCatalogueController = new BookCatalogueController($twigRenderer);
+$forumPostController = new ForumPostController($twigRenderer, $forumPostService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -76,7 +80,7 @@ $app->post('/profile', function (Request $request, Response $response, $args) us
 });
 
 // Routing to Discuss Forum
-$app->get('/forums', function (Request $request, Response $response) use ($forumController) {
+$app->get('forums', function (Request $request, Response $response) use ($forumController) {
      return $forumController->getAllForums($request, $response);
 });
 
@@ -94,6 +98,19 @@ $app->get('api/forums/{id}', function (Request $request, Response $response, $ar
 
 $app->delete('api/forums/{id}', function (Request $request, Response $response, $args) use ($forumController) {
     return $forumController->deleteForum($request, $response, $args);
+});
+
+// Routing for Forum Posts
+$app->get('/forums/{id}/posts', function (Request $request, Response $response, array $args) use ($forumPostController) {
+    return $forumPostController->getForumPostsByForumId($request, $response, $args);
+});
+
+$app->get('api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
+    return $forumPostController->getForumPostsByForumId($request, $response, $args);
+});
+
+$app->post('api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
+    return $forumPostController->createForumPost($request, $response, $args);
 });
 
 //Book Catalogue

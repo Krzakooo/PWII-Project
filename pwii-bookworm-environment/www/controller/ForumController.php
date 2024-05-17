@@ -6,7 +6,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Bookworm\service\ForumService;
 use Bookworm\service\TwigRenderer;
-use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response as SlimResponse;
 
 class ForumController

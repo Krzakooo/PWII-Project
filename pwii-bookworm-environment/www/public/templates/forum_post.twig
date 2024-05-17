@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <style>
+        .forum-details {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="forum-details">
+    <h1>{{ forum.forumName | upper }}</h1>
+    <p>{{ forum.forumDescription }}</p>
+</div>
+
+<div class="post-list">
+    <h2>Posts</h2>
+    <ul>
+        {% if posts is empty %}
+            <li>No posts available.</li>
+        {% else %}
+            {% for post in posts %}
+                <li>
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.contents }}</p>
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+</div>
+
+<div class="create-post-form">
+    <h2>Create New Post</h2>
+    <form action="/api/forums/{{ forum.forumId }}/posts" method="POST">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br>
+        <label for="contents">Contents:</label><br>
+        <textarea id="contents" name="contents" required></textarea><br>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+</body>
+</html>
