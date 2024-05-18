@@ -47,7 +47,7 @@ $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $bookCatalogueController = new BookCatalogueController($twigRenderer);
-$forumPostController = new ForumPostController($twigRenderer, $forumPostService);
+$forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -102,14 +102,14 @@ $app->delete('api/forums/{id}', function (Request $request, Response $response, 
 
 // Routing for Forum Posts
 $app->get('/forums/{id}/posts', function (Request $request, Response $response, array $args) use ($forumPostController) {
-    return $forumPostController->getForumPostsByForumId($request, $response, $args);
+    return $forumPostController->renderForumPostsPage($request, $response, $args);
 });
 
-$app->get('api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
-    return $forumPostController->getForumPostsByForumId($request, $response, $args);
+$app->get('/api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
+    return $forumPostController->renderForumPostsPage($request, $response, $args);
 });
 
-$app->post('api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
+$app->post('/api/forums/{id}/posts', function (Request $request, Response $response, $args) use ($forumPostController) {
     return $forumPostController->createForumPost($request, $response, $args);
 });
 

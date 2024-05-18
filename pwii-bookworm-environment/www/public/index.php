@@ -42,7 +42,8 @@ $forumPostService = new ForumPostService($pdo);
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService);
+$forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
+
 
 $app->get('/', [$homeController, 'index']);
 
@@ -62,8 +63,8 @@ $app->get('/api/forums/{id}', [$forumController, 'getForumById']);
 $app->delete('/api/forums/{id}', [$forumController, 'deleteForum']);
 
 // Index for Forum Posts
-$app->get('/forums/{forumId}/posts', [$forumPostController, 'getForumPostsByForumId']);
-$app->get('/api/forums/{forumId}/posts', [$forumPostController, 'getForumPostsByForumId']);
+$app->get('/forums/{forumId}/posts', [$forumPostController, 'renderForumPostsPage']);
+$app->get('/api/forums/{forumId}/posts', [$forumPostController, 'renderForumPostsPage']);
 $app->post('/api/forums/{forumId}/posts', [$forumPostController, 'createForumPost']);
 
 $app->run();

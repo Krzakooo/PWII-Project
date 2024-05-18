@@ -11,12 +11,13 @@
     </style>
 </head>
 <body>
-<div class="forum-details">
+<div class="forum-details" data-forum-id="{{ forum.forumId }}">
+    <h1>{{ forum.forumId }}</h1>
     <h1>{{ forum.forumName | upper }}</h1>
     <p>{{ forum.forumDescription }}</p>
 </div>
 
-<div class="post-list">
+<div class="post-list" id="post-list">
     <h2>Posts</h2>
     <ul>
         {% if posts is empty %}
@@ -33,13 +34,59 @@
 
 <div class="create-post-form">
     <h2>Create New Post</h2>
-    <form action="/api/forums/{{ forum.forumId }}/posts" method="POST">
-        <label for="title">Title:</label><br>
-        <input type="text" id="title" name="title" required><br>
-        <label for="contents">Contents:</label><br>
-        <textarea id="contents" name="contents" required></textarea><br>
+    <form id="create-post-form">
+        <input type="hidden" id="forumId" name="forumId" value="{{ forum.forumId }}">
+        <input type="hidden" id="userId" name="userId" value="1">
+        <label for="content">Contents:</label><br>
+        <input type="text" id="content" name="content" required><br>
         <button type="submit">Submit</button>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('create-post-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const forumId = document.querySelector('.forum-details').dataset.forumId;
+        const userId = 1;
+        const content = document.getElementById('content').value;
+        console.log("Content:", content);
+
+        const postData = {
+            forumId: forumId,
+            userId: userId,
+            content: content
+        };
+
+        // Adding logging to debug request data
+        console.log("Post Data:", postData);
+
+        fetch(`/api/forums/${forumId}/posts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to create post');
+                }
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                document.getElementById('content').value = '';
+                console.log('Post created successfully:', data);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error creating post:', error.message);
+            });
+    });
+</script>
+
 </body>
 </html>

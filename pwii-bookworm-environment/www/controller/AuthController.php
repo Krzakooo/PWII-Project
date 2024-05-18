@@ -10,6 +10,7 @@ use Bookworm\service\TwigRenderer;
 use Bookworm\service\AuthService;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
+use Slim\Psr7\Response as SlimResponse;
 
 class AuthController
 {
@@ -262,4 +263,6 @@ class AuthController
             return null;
         }
     }
+
+
 }

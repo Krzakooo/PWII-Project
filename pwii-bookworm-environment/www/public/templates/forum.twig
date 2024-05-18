@@ -207,13 +207,8 @@
 </div>
 
 <script>
-
-
-
-
     // Get the <span> element that closes the modal
     const span = document.getElementsByClassName("close")[0];
-
 
     // Create new Forum
     document.getElementById('createForm').addEventListener('submit', function (event) {
@@ -226,7 +221,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    return response.json(); // Parse the response JSON
+                    return response.json();
                 } else {
                     console.error('Failed to create forum:', response.statusText);
                     throw new Error('Failed to create forum');
@@ -242,7 +237,6 @@
                 newForum.innerHTML = `<strong>${data.title}</strong> - ${data.description}`;
                 forumList.appendChild(newForum);
 
-                // Reload the page to refresh the forum list
                 window.location.reload();
             })
     });
