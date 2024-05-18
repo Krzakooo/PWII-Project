@@ -59,13 +59,14 @@ class ForumPostController
     {
         try {
             session_start();
-            if (!$this->isAuthenticated()) {
+            if (!$this->authService->isLoggedIn()) {
                 throw new \Exception('User not authenticated');
             }
 
             $userId = $_SESSION['user_id'];
-            $forumId = $request->getAttribute('forumId');
+            $forumId = (int)$request->getAttribute('forumId');
 
+            $userId = $_SESSION['user_id'];
             $data = $request->getParsedBody();
             $content = $data['content'] ?? '';
 
@@ -84,6 +85,7 @@ class ForumPostController
             $responseData = [
                 'message' => 'Post created successfully',
                 'post_id' => $postId,
+                'user_id' => $userId,
             ];
 
             $jsonResponse = new SlimResponse();
@@ -92,20 +94,9 @@ class ForumPostController
 
             return $jsonResponse->withStatus(201);
         } catch (\Exception $e) {
-            error_log($e->getMessage()); // Log the error message
-            $errorResponse = [
-                'error' => $e->getMessage(),
-            ];
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode($errorResponse));
-            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
-            return $jsonResponse->withStatus(500);
+            return $response->withStatus(500);
         }
     }
 
 
-    private function isAuthenticated()
-    {
-        return isset($_SESSION['user_id']);
-    }
 }

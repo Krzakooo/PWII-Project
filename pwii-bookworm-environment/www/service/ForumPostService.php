@@ -25,24 +25,19 @@ class ForumPostService
 
     public function createForumPost(array $postData): bool
     {
-        try {
-            $sql = "INSERT INTO posts (forum_id, user_id, content) VALUES (:forumId, :userId, :content)";
-            $stmt = $this->pdo->prepare($sql);
+        if (isset($postData['forum_id'], $postData['user_id'], $postData['content'])) {
+            $postStatement = $this->pdo->prepare("INSERT INTO posts (forum_id, user_id, content) VALUES (:forumId, :userId, :content)");
 
-            $stmt->bindParam(':forumId', $postData['forum_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':userId', $postData['user_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':content', $postData['content'], PDO::PARAM_STR);
+            $postStatement->bindParam(':forumId', $postData['forum_id'], PDO::PARAM_INT);
+            $postStatement->bindParam(':userId', $postData['user_id'], PDO::PARAM_INT);
+            $postStatement->bindParam(':content', $postData['content'], PDO::PARAM_STR);
 
-            if ($stmt->execute()) {
-                return true;
-            } else {
-                error_log('Statement execution failed: ' . implode(', ', $stmt->errorInfo()));
-                return false;
-            }
-        } catch (\PDOException $e) {
-            error_log('PDOException: ' . $e->getMessage());
+            return $postStatement->execute();
+        } else {
             return false;
         }
     }
+
+
 
 }

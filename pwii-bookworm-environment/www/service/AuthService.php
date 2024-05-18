@@ -16,7 +16,7 @@ class AuthService
         $this->pdo = $pdo;
     }
 
-    private function isLoggedIn(): bool
+    public function isLoggedIn(): bool
     {
         return isset($_SESSION['user_id']);
     }
@@ -31,6 +31,7 @@ class AuthService
             return null;
         }
     }
+
 
     public function login(string $email, string $password): bool
     {
@@ -116,5 +117,6 @@ class AuthService
 
         return $success;
     }
+
 
 }
