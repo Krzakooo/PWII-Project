@@ -54,32 +54,32 @@ $forumPostController = new ForumPostController($twigRenderer, $forumPostService,
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
-    return $homeController->index($request, $response, $args);
+    return $homeController->index($request, $response);
 });
 
 $app->get('/sign-up', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showSignUpForm($request, $response, $args);
+    return $authController->showSignUpForm($request, $response);
 });
 $app->post('/sign-up', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->signUp($request, $response, $args);
+    return $authController->signUp($request, $response);
 });
 
 $app->get('/sign-in', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showSignInForm($request, $response, $args);
+    return $authController->showSignInForm($request, $response);
 });
 $app->post('/sign-in', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->signIn($request, $response, $args);
+    return $authController->signIn($request, $response);
 });
 
 $app->post('/logout', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->logout($request, $response, $args);
+    return $authController->logout($request, $response);
 });
 
 $app->get('/profile', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showProfile($request, $response, $args);
+    return $authController->showProfile($request, $response);
 });
 $app->post('/profile', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->updateProfile($request, $response, $args);
+    return $authController->updateProfile($request, $response);
 });
 
 // Routing to Discuss Forum
