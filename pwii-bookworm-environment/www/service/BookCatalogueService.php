@@ -2,7 +2,6 @@
 
 namespace Bookworm\service;
 
-use Bookworm\model\Book;
 use PDO;
 
 class BookCatalogueService
@@ -18,61 +17,61 @@ class BookCatalogueService
         $this->db = $db;
     }
 
-
     private function fetchData($url)
     {
         $response = file_get_contents($url);
         return $response ? json_decode($response, true) : null;
     }
 
+    public function saveBook(string $title, string $author, string $description, int $pages, string $cover): ?int
+    {
+        $sql = "INSERT INTO books (title, author, description, pages, cover) VALUES (:title, :author, :description, :pages, :cover)";
+        $stmt = $this->db->prepare($sql);
+        $success = $stmt->execute([
+            'title' => $title,
+            'author' => $author,
+            'description' => $description,
+            'pages' => $pages,
+            'cover' => $cover,
+        ]);
 
+        if ($success) {
+            return $this->db->lastInsertId();
+        } else {
+            return null;
+        }
+    }
 
-    public function fetchBooks(): array
+    public function fetchBooks(): ?array
     {
         $stmt = $this->db->query("SELECT * FROM books");
         $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $result = [];
-        foreach ($books as $book) {
-            $result[] = new Book(
-                $book['title'],
-                $book['author'],
-                $book['description'],
-                $book['pages'],
-                $book['cover_url']
-            );
-        }
-        return $result;
+        return $books ?: null;
     }
 
-    public function getBookDetails($bookId): ?Book
+    public function addBookToCatalogue(array $data): bool
+    {
+        if (isset($data['title'], $data['author'], $data['description'], $data['pages'])) {
+            $insertStatement = $this->db->prepare("INSERT INTO books (title, author, description, pages, cover) VALUES (:title, :author, :description, :pages, :cover)");
+
+            $insertStatement->bindParam(':title', $data['title'], PDO::PARAM_STR);
+            $insertStatement->bindParam(':author', $data['author'], PDO::PARAM_STR);
+            $insertStatement->bindParam(':description', $data['description'], PDO::PARAM_STR);
+            $insertStatement->bindParam(':pages', $data['pages'], PDO::PARAM_INT);
+            $insertStatement->bindParam(':cover', $data['cover'], PDO::PARAM_STR);
+
+            return $insertStatement->execute();
+        } else {
+            return false;
+        }
+    }
+
+
+    public function getBookDetails($bookId): ?array
     {
         $stmt = $this->db->prepare("SELECT * FROM books WHERE id = :id");
         $stmt->execute(['id' => $bookId]);
-        $book = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($book) {
-            return new Book(
-                $book['title'],
-                $book['author'],
-                $book['description'],
-                $book['pages'],
-                $book['cover_url']
-            );
-        }
-        return null;
-    }
-
-    public function saveBook(Book $book): void
-    {
-        $stmt = $this->db->prepare("INSERT INTO books (title, author, description, pages, cover_url) VALUES (:title, :author, :description, :pages, :cover_url)");
-        $stmt->execute([
-            'title' => $book->getTitle(),
-            'author' => $book->getAuthor(),
-            'description' => $book->getDescription(),
-            'pages' => $book->getPages(),
-            'cover_url' => $book->getCover(),
-        ]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     public function getBookRatings($bookId): array
@@ -119,7 +118,7 @@ class BookCatalogueService
         $stmt->execute(['book_id' => $bookId]);
     }
 
-    public function handleImportForm($isbn): ?Book
+    public function handleImportForm($isbn): ?array
     {
         $url = "https://openlibrary.org/isbn/{$isbn}.json";
         $response = file_get_contents($url);
@@ -148,19 +147,25 @@ class BookCatalogueService
 
         $coverUrl = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg" : 'No cover available';
 
-        return new Book($title, $authorName, $description, $pages, $coverUrl);
+        return [
+            'title' => $title,
+            'author' => $authorName,
+            'description' => $description,
+            'pages' => $pages,
+            'cover' => $coverUrl,
+        ];
     }
 
-    public function updateBook(int $bookId, Book $updatedBook): void
+    public function updateBook(int $bookId, string $title, string $author, string $description, int $pages, string $cover): void
     {
-        $stmt = $this->db->prepare("UPDATE books SET title = :title, author = :author, description = :description, pages = :pages, cover_url = :cover_url WHERE id = :id");
+        $stmt = $this->db->prepare("UPDATE books SET title = :title, author = :author, description = :description, pages = :pages, cover = :cover WHERE id = :id");
         $stmt->execute([
             'id' => $bookId,
-            'title' => $updatedBook->getTitle(),
-            'author' => $updatedBook->getAuthor(),
-            'description' => $updatedBook->getDescription(),
-            'pages' => $updatedBook->getPages(),
-            'cover_url' => $updatedBook->getCover(),
+            'title' => $title,
+            'author' => $author,
+            'description' => $description,
+            'pages' => $pages,
+            'cover' => $cover,
         ]);
     }
 
