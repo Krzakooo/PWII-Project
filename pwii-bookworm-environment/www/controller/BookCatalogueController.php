@@ -22,17 +22,12 @@ class BookCatalogueController
 
     public function showAddBookForm(Request $request, Response $response): Response
     {
-        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
-        if (!$authenticated) {
-            $response->getBody()->write($this->twig->render('signin.twig'));
-            return $response->withHeader('Content-Type', 'text/html');
-        }
 
         $books = $this->service->fetchBooks();
 
         $response->getBody()->write($this->twig->render('catalogue.twig', [
-            'authenticated' => $authenticated,
+
             'books' => $books,
         ]));
         return $response->withHeader('Content-Type', 'text/html');
