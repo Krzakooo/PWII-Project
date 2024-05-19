@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Bookworm\controller\ForumController;
 use Bookworm\controller\ForumPostController;
 use Bookworm\service\ForumPostService;
+use Bookworm\service\BookCatalogueService;
 use Bookworm\service\ForumService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -21,6 +22,7 @@ require_once '../controller/HomeController.php';
 require_once '../controller/BookCatalogueController.php';
 require_once '../service/AuthService.php';
 require_once '../service/TwigRenderer.php';
+require_once '../service/BookCatalogueService.php';
 require_once '../config/dependencies.php';
 require_once '../service/ForumService.php';
 require_once '../service/ForumPostService.php';
@@ -41,7 +43,7 @@ $pdo = Dependencies::connect();
 $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
 $forumPostService = new ForumPostService($pdo);
-$bookCatalogueService = new $bookCatalogueService($pdo);
+$bookCatalogueService = new BookCatalogueService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);

@@ -4,14 +4,16 @@ namespace Bookworm\model;
 
 class Book
 {
+    private $id;
     private $title;
     private $author;
     private $description;
     private $pages;
     private $cover;
 
-    public function __construct($title, $author, $description, $pages, $cover = null)
+    public function __construct($id, $title, $author, $description, $pages, $cover = null)
     {
+        $this->id = $id;
         $this->title = $title;
         $this->author = $author;
         $this->description = $description;
@@ -20,6 +22,16 @@ class Book
     }
 
     // Getters and setters
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getTitle()
     {
         return $this->title;
@@ -70,6 +82,5 @@ class Book
         $this->cover = $cover;
     }
 
-    // Additional methods for handling file upload, validation, etc.
-    // You can add methods here for processing file upload, validation, etc.
+
 }
