@@ -33,20 +33,20 @@ class ForumPostController
 
     public function renderForumPostsPage(Request $request, Response $response, array $args)
     {
-        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
-        $usernameDefined = isset($_SESSION['username']) && !empty($_SESSION['username']);
-
-        if (!$authenticated) {
-            if ($request->getUri()->getPath() !== '/api/forums') {
-                return $response->withHeader('Location', '/sign-in')->withStatus(302);
-            } else {
-                $responseData = json_encode(['error' => 'Unauthorized']);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(401)->withBody($responseData);
-            }
-        } else if (!$usernameDefined && strpos($request->getUri()->getPath(), '/api/') === 0) {
-            $responseData = json_encode(['error' => 'Forbidden']);
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(403)->withBody($responseData);
-        }
+//        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+//        $usernameDefined = isset($_SESSION['username']) && !empty($_SESSION['username']);
+//
+//        if (!$authenticated) {
+//            if ($request->getUri()->getPath() !== '/api/forums') {
+//                return $response->withHeader('Location', '/sign-in')->withStatus(302);
+//            } else {
+//                $responseData = json_encode(['error' => 'Unauthorized']);
+//                return $response->withHeader('Content-Type', 'application/json')->withStatus(401)->withBody($responseData);
+//            }
+//        } else if (!$usernameDefined && strpos($request->getUri()->getPath(), '/api/') === 0) {
+//            $responseData = json_encode(['error' => 'Forbidden']);
+//            return $response->withHeader('Content-Type', 'application/json')->withStatus(403)->withBody($responseData);
+//        }
 
         $forumId = (int) $args['forumId'];
 
