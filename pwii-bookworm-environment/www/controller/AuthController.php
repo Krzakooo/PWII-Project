@@ -214,7 +214,7 @@ class AuthController
         $profilePicture = $uploadedFiles['profile_picture'] ?? null;
 
         if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
-            $uploadPath = __DIR__ . '/uploads';
+            $uploadPath = __DIR__ . '/../public/uploads';
             $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
             if ($fileName) {
                 $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
@@ -222,7 +222,7 @@ class AuthController
                     $errors[] = "Failed to update profile picture. Please try again later.";
                 }
             } else {
-                $errors[] = "Failed to upload profile picture. Please try again later.";
+                $errors[] = $fileName;
             }
         }
 
@@ -263,6 +263,5 @@ class AuthController
             return null;
         }
     }
-
 
 }

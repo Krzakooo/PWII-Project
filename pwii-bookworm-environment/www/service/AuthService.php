@@ -96,7 +96,7 @@ class AuthService
     public function updateProfilePicture(int $userId, string $profile_picture): bool
     {
         $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
-        $profile_picture = "uploads/" . $profile_picture;
+        $profile_picture = 'uploads/' . $profile_picture;
         $success = $stmt->execute(['profile_picture' => $profile_picture, 'id' => $userId]);
 
         return $success;
