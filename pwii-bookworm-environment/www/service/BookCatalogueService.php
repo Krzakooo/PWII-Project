@@ -66,7 +66,6 @@ class BookCatalogueService
         }
     }
 
-
     public function getBookDetails($bookId): ?array
     {
         $stmt = $this->db->prepare("SELECT * FROM books WHERE id = :id");
@@ -156,22 +155,5 @@ class BookCatalogueService
         ];
     }
 
-    public function updateBook(int $bookId, string $title, string $author, string $description, int $pages, string $cover): void
-    {
-        $stmt = $this->db->prepare("UPDATE books SET title = :title, author = :author, description = :description, pages = :pages, cover = :cover WHERE id = :id");
-        $stmt->execute([
-            'id' => $bookId,
-            'title' => $title,
-            'author' => $author,
-            'description' => $description,
-            'pages' => $pages,
-            'cover' => $cover,
-        ]);
-    }
 
-    public function deleteBook(int $bookId): void
-    {
-        $stmt = $this->db->prepare("DELETE FROM books WHERE id = :id");
-        $stmt->execute(['id' => $bookId]);
-    }
 }
