@@ -109,6 +109,12 @@ class BookCatalogueController
 
     public function getBookDetails(Request $request, Response $response, $args): Response
     {
+        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+
+        if (!$authenticated) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+
         $bookId = $args['id'];
         $bookDetails = $this->service->getBookDetails($bookId);
         $searchResults = $this->fetchBookSearchResults();
