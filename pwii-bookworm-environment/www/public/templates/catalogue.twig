@@ -183,7 +183,6 @@
     <!-- Create New Book button -->
     <button id="createBookBtn">Create New Book</button>
 
-    <!-- Create New Book form -->
     <form id="createBookForm">
         <label for="titleInput">Title:</label>
         <input type="text" id="titleInput" name="title" required><br>
@@ -203,6 +202,42 @@
 <script>
     const createBookBtn = document.getElementById('createBookBtn');
     const createBookForm = document.getElementById('createBookForm');
+    createBookBtn.addEventListener('click', function() {
+        createBookForm.style.display = 'block';
+    });
+    const cancelBtn = document.getElementById('cancelBtn');
+    cancelBtn.addEventListener('click', function() {
+        createBookForm.reset();
+        createBookForm.style.display = 'none';
+    });
+    window.addEventListener('click', function(event) {
+        if (event.target === createBookForm) {
+            createBookForm.style.display = 'none';
+        }
+    });
+    createBookForm.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    createBookForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/catalogue', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.book_id) {
+                    alert('Book created successfully with ID: ' + data.book_id);
+                    createBookForm.reset();
+                    createBookForm.style.display = 'none';
+                } else {
+                    alert('Failed to create book. Please check your input data.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
     const booksData = JSON.parse('{{ searchResults|json_encode()|e }}');
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -252,48 +287,7 @@
         });
     });
 
-    createBookBtn.addEventListener('click', function () {
-        createBookForm.style.display = 'block';
-    });
 
-    const cancelBtn = document.getElementById('cancelBtn');
-
-    cancelBtn.addEventListener('click', function () {
-        createBookForm.reset();
-        createBookForm.style.display = 'none';
-    });
-
-    window.addEventListener('click', function (event) {
-        if (event.target === createBookForm) {
-            createBookForm.style.display = 'none';
-        }
-    });
-
-    createBookForm.addEventListener('click', function (event) {
-        event.stopPropagation();
-    });
-
-    createBookForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-
-        fetch('/catalogue', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.book_id) {
-                    alert('Book created successfully with ID: ' + data.book_id);
-
-                    createBookForm.reset();
-                    createBookForm.style.display = 'none';
-                } else {
-                    alert('Failed to create book. Please check your input data.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
 </script>
 </body>
 </html>
