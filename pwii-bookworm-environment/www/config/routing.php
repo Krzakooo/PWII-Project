@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Bookworm\controller\ForumController;
 use Bookworm\controller\ForumPostController;
 use Bookworm\service\ForumPostService;
+use Bookworm\service\BookCatalogueService;
 use Bookworm\service\ForumService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -21,6 +22,7 @@ require_once '../controller/HomeController.php';
 require_once '../controller/BookCatalogueController.php';
 require_once '../service/AuthService.php';
 require_once '../service/TwigRenderer.php';
+require_once '../service/BookCatalogueService.php';
 require_once '../config/dependencies.php';
 require_once '../service/ForumService.php';
 require_once '../service/ForumPostService.php';
@@ -41,47 +43,48 @@ $pdo = Dependencies::connect();
 $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
 $forumPostService = new ForumPostService($pdo);
+$bookCatalogueService = new BookCatalogueService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
-    return $homeController->index($request, $response, $args);
+    return $homeController->index($request, $response);
 });
 
 $app->get('/sign-up', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showSignUpForm($request, $response, $args);
+    return $authController->showSignUpForm($request, $response);
 });
 $app->post('/sign-up', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->signUp($request, $response, $args);
+    return $authController->signUp($request, $response);
 });
 
 $app->get('/sign-in', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showSignInForm($request, $response, $args);
+    return $authController->showSignInForm($request, $response);
 });
 $app->post('/sign-in', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->signIn($request, $response, $args);
+    return $authController->signIn($request, $response);
 });
 
 $app->post('/logout', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->logout($request, $response, $args);
+    return $authController->logout($request, $response);
 });
 
 $app->get('/profile', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->showProfile($request, $response, $args);
+    return $authController->showProfile($request, $response);
 });
 $app->post('/profile', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->updateProfile($request, $response, $args);
+    return $authController->updateProfile($request, $response);
 });
 
 // Routing to Discuss Forum
 $app->get('forums', function (Request $request, Response $response) use ($forumController) {
-     return $forumController->getAllForums($request, $response);
+    return $forumController->getAllForums($request, $response);
 });
 
 $app->get('api/forums', function (Request $request, Response $response) use ($forumController) {
@@ -114,19 +117,25 @@ $app->post('/api/forums/{id}/posts', function (Request $request, Response $respo
 });
 
 //Book Catalogue
-$app->get('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
-
-});
-
 $app->get('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->showAddBookForm($request, $response, $args);
-});
-$app->post('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->addBookToCatalogue($request, $response, $args);
+    return $bookCatalogueController->showAddBookForm($request, $response);
 });
 
-$app->post('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->handleImportForm($request);
+$app->post('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->addBookToCatalogue($request, $response);
 });
+
+$app->get('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->getBookDetails($request, $response, $args);
+});
+
+$app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->reviewBook($request, $response, $args);
+});
+
+$app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->deleteReview($request, $response, $args);
+});
+
 
 $app->run();

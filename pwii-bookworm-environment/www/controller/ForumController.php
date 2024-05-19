@@ -21,6 +21,27 @@ class ForumController
 
     public function getAllForums(Request $request, Response $response): Response
     {
+        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+        $usernameDefined = isset($_SESSION['username']) && !empty($_SESSION['username']);
+
+        if (!$authenticated) {
+            if ($request->getUri()->getPath() !== '/api/forums') {
+                return $response->withHeader('Location', '/sign-in')->withStatus(302);
+
+            } else {
+                if (!$usernameDefined && strpos($request->getUri()->getPath(), '/api/') === 0) {
+                    //$response = $response->withStatus(403);
+                    $responseData = json_encode(['error' => 'Unauthorized']);
+                    $response->getBody()->write($this->twigRenderer->render('signin.twig'));
+                    return $response->withHeader('Content-Type', 'text/html')->withStatus(403);
+                } else {
+                    // $response = $response->withStatus(401);
+                    $responseData = json_encode(['error' => 'Forbidden']);
+                    $response->getBody()->write($this->twigRenderer->render('signin.twig'));
+                    return $response->withHeader('Content-Type', 'text/html')->withStatus(401);
+                }
+            }
+        }
         try {
             $forums = $this->forumService->getAllForums();
             return $this->twigRenderer->renderResponse($response, 'forum.twig', ['forums' => $forums]);
@@ -66,6 +87,27 @@ class ForumController
 
     public function getForumById(Request $request, Response $response, array $args): Response
     {
+        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+        $usernameDefined = isset($_SESSION['username']) && !empty($_SESSION['username']);
+
+        if (!$authenticated) {
+            if ($request->getUri()->getPath() !== '/api/forums') {
+                return $response->withHeader('Location', '/sign-in')->withStatus(302);
+
+            } else {
+                if (!$usernameDefined && strpos($request->getUri()->getPath(), '/api/') === 0) {
+                    //$response = $response->withStatus(403);
+                    $responseData = json_encode(['error' => 'Unauthorized']);
+                    $response->getBody()->write($this->twigRenderer->render('signin.twig'));
+                    return $response->withHeader('Content-Type', 'text/html')->withStatus(403);
+                } else {
+                    // $response = $response->withStatus(401);
+                    $responseData = json_encode(['error' => 'Forbidden']);
+                    $response->getBody()->write($this->twigRenderer->render('signin.twig'));
+                    return $response->withHeader('Content-Type', 'text/html')->withStatus(401);
+                }
+            }
+        }
         try {
             $forumId = $args['id'];
             $forum = $this->forumService->getForumById($forumId);

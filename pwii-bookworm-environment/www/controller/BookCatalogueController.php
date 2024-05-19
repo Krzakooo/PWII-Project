@@ -4,138 +4,229 @@ namespace Bookworm\controller;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Psr7\Response as SlimResponse;
 use Slim\Views\Twig;
 use Bookworm\service\TwigRenderer;
+use Bookworm\service\BookCatalogueService;
 use Bookworm\model\Book;
 
 class BookCatalogueController
 {
     private $twig;
-    private Book $book;
+    private $service;
 
-    public function __construct(TwigRenderer $twig)
+    public function __construct(TwigRenderer $twig, BookCatalogueService $service)
     {
         $this->twig = $twig;
+        $this->service = $service;
     }
+    private function fetchBookSearchResults()
+    {
+        // Hardcoded search strings for different categories
+        $categories = ['action', 'adventure', 'mystery', 'fantasy', 'romance', 'science', 'history', 'biography', 'horror', 'comedy'];
+
+        $allSearchResults = [];
+
+        foreach ($categories as $category) {
+            $url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name";
+
+            $json = file_get_contents($url);
+
+            // Decode JSON data
+            $data = json_decode($json, true);
+
+            if (isset($data['numFound']) && $data['numFound'] > 0) {
+                $searchResults = [];
+
+                foreach ($data['docs'] as $doc) {
+                    $book = [
+                        'title' => $doc['title'],
+                        'author_names' => $doc['author_name'] ?? ['Unknown']
+                    ];
+
+                    // Check if the book already exists in the database
+                    if (!$this->service->bookExists($book['title'], implode(', ', $book['author_names']))) {
+                        // Save book to the database
+                        $bookId = $this->service->saveBook(
+                            $book['title'],
+                            implode(', ', $book['author_names']),
+                            '',
+                            0,
+                            ''
+                        );
+
+                        // If book is saved successfully, add it to search results
+                        if ($bookId !== null) {
+                            $searchResults[] = [
+                                'id' => $bookId,
+                                'title' => $book['title'],
+                                'author_names' => $book['author_names']
+                            ];
+                        }
+                    }
+
+                    // Limit to 5 books per category
+                    if (count($searchResults) >= 5) {
+                        break;
+                    }
+                }
+
+                $allSearchResults[$category] = $searchResults;
+            } else {
+                $allSearchResults[$category] = [];
+            }
+        }
+
+        return $allSearchResults;
+    }
+
 
     public function showAddBookForm(Request $request, Response $response): Response
     {
-        // Check if the user is authenticated
-        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+        $books = $this->service->fetchBooks();
+        $searchResults = $this->fetchBookSearchResults();
 
-        if (!$authenticated) {
-            // If not authenticated, redirect to sign-in page
-            return $this->twig->render($response, 'signin.twig');
-        }
-
-        $articles = $this->fetchBooks();
-
-        // Render the news page using Twig
-        return $this->twig->render($response, 'catalogue.twig', [
-            'authenticated' => $authenticated,
-            'articles' => $articles, // Pass fetched books to the Twig template
+        // Render Twig template with data
+        $htmlContent = $this->twig->render('catalogue.twig', [
+            'books' => $books,
+            'searchResults' => $searchResults,
         ]);
+
+        // Create a new response object
+        $htmlResponse = new SlimResponse();
+        $htmlResponse->getBody()->write($htmlContent);
+
+        // Set content type header
+        $htmlResponse = $htmlResponse->withHeader('Content-Type', 'text/html');
+
+        return $htmlResponse;
     }
 
-    public function addBookToCatalogue(Request $request, Response $response, Book $book): Response
+    public function addBookToCatalogue(Request $request, Response $response): Response
+    {
+        try {
+            $data = $request->getParsedBody();
+
+            $bookId = $this->service->addBookToCatalogue($data);
+
+            if ($bookId !== null) {
+                $responseData = ['message' => 'Book created successfully', 'book_id' => $bookId];
+                $statusCode = 201;
+            } else {
+                $responseData = ['error' => 'Failed to create book'];
+                $statusCode = 400;
+            }
+
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode($responseData));
+            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+
+            return $jsonResponse->withStatus($statusCode);
+        } catch (\Exception $e) {
+            return $response->withStatus(500);
+        }
+    }
+
+    public function getBookDetails(Request $request, Response $response, $args): Response
     {
         $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
         if (!$authenticated) {
-            // If not authenticated, redirect to sign-in page
-            return $this->twig->render($response, 'signin.twig');
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
-        //modiify return
-        // render $this->twig->render($response, 'createBookForm.twig', [
 
+        $bookId = $args['id'];
+        $bookDetails = $this->service->getBookDetails($bookId);
+        $searchResults = $this->fetchBookSearchResults();
+
+        $response->getBody()->write($this->twig->render('book_details.twig', [
+            'book' => $bookDetails,
+            'searchResults' => $searchResults
+        ]));
+        $jsonResponse = new SlimResponse();
+        $jsonResponse->getBody()->write(json_encode($response));
+        $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+        return $jsonResponse;
     }
 
-    private function getBookDetails($bookId)
-    {
-        // Example: Fetch book details from database or API based on $bookId
-        // Assuming you have a Book model
-        // Example usage of Book model to fetch details from database
-        $book = Book::find($bookId); // Assuming this is an Eloquent model
 
-        // Return the fetched book
-        return $book;
+    public function rateBook(Request $request, Response $response, $args): Response
+    {
+        $bookId = $args['id'];
+        $parsedBody = $request->getParsedBody();
+        $rating = $parsedBody['rating'];
+
+        $this->service->saveRating($bookId, $rating);
+
+        $response->getBody()->write('Rating saved successfully');
+        return $response->withHeader('Content-Type', 'text/html');
     }
 
-    public function showBookDetails(Request $request, Response $response, $args)
+    public function deleteRating(Request $request, Response $response, $args): Response
     {
-        // Get book ID from route parameters
         $bookId = $args['id'];
 
-        // Fetch book details from database or API based on the ID
-        $book = $this->getBookDetails($bookId);
+        $this->service->deleteRating($bookId);
 
-        // Render Twig template with book details
-        return $this->twig->render('bookdetails.twig', [
-            'book' => $book,
-        ]);
+        $response->getBody()->write('Rating deleted successfully');
+        return $response->withHeader('Content-Type', 'text/html');
     }
 
-    function handleImportForm($isbn)
+    public function reviewBook(Request $request, Response $response, $args): Response
     {
-        // Send GET request to OpenLibrary API
-        $url = "https://openlibrary.org/isbn/{$isbn}.json";
-        $response = file_get_contents($url);
+        $bookId = $args['id'];
+        $parsedBody = $request->getParsedBody();
+        $review = $parsedBody['review'];
 
-        // Check if response is valid
-        if ($response === false) {
-            return false;
+        $this->service->saveReview($bookId, $review);
+
+        $response->getBody()->write('Review saved successfully');
+        return $response->withHeader('Content-Type', 'text/html');
+    }
+
+    public function deleteReview(Request $request, Response $response, $args): Response
+    {
+        $bookId = $args['id'];
+
+        $this->service->deleteReview($bookId);
+
+        $response->getBody()->write('Review deleted successfully');
+        return $response->withHeader('Content-Type', 'text/html');
+    }
+
+    /* //Search funktion to seach for category till books
+     public function getBookSearchResultsJSON($request, $response, $args)
+    {
+        $searchString = urlencode($args['id']);
+
+        $url = "https://openlibrary.org/search.json?q={$searchString}&fields=title,author_name";
+
+        $json = file_get_contents($url);
+
+        // Decode JSON data
+        $data = json_decode($json, true);
+
+        if (isset($data['numFound']) && $data['numFound'] > 0) {
+            $searchResults = [];
+
+            foreach ($data['docs'] as $doc) {
+                $book = [
+                    'title' => $doc['title'],
+                    'author_names' => $doc['author_name'] ?? ['Unknown']
+                ];
+                $searchResults[] = $book;
+            }
+
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode($searchResults));
+            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+            return $jsonResponse;
         }
 
-        // Parse JSON response
-        $bookData = json_decode($response, true);
-
-        // Extract relevant information
-        $title = $bookData['title'];
-        $pages = $bookData['number_of_pages'];
-        $workIdentifier = $bookData['works'][0]['key'];
-        $coverId = $bookData['covers'][0];
-
-        $workUrl = "https://openlibrary.org{$workIdentifier}.json";
-        $workResponse = file_get_contents($workUrl);
-        $workData = json_decode($workResponse, true);
-        $description = $workData['description'];
-
-        $authorIdentifier = $workData['authors'][0]['key'];
-        $authorUrl = "https://openlibrary.org{$authorIdentifier}.json";
-        $authorResponse = file_get_contents($authorUrl);
-        $authorData = json_decode($authorResponse, true);
-        $authorName = $authorData['name'];
-
-        $coverUrl = "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg";
-
-        // Create Book object
-        $book = new Book($title, $authorName, $description, $pages, $coverUrl);
-
-        // Optionally, validate data and add book to database
-        // addBookToDatabase($book);
-
-        return $book;
-
-    }
-
-
-    private function fetchBooks(): array
-    {
-
-        return [
-            [
-                'title' => 'Article 1',
-                'publication_date' => '2024-04-15',
-                'author' => 'John Doe',
-                'summary' => 'This is a summary of the first article.',
-            ],
-            [
-                'title' => 'Article 2',
-                'publication_date' => '2024-04-16',
-                'author' => 'Jane Smith',
-                'summary' => 'This is a summary of the second article.',
-            ],
-
-        ];
-    }
+        // If no matching book found, return empty array
+        $emptyResponse = new SlimResponse();
+        $emptyResponse->getBody()->write(json_encode([]));
+        $emptyResponse = $emptyResponse->withHeader('Content-Type', 'application/json');
+        return $emptyResponse;
+    }*/
 }
