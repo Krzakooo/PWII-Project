@@ -1,4 +1,4 @@
-# Bookworm - Malou, Magda, Patryk :3
+# Bookworm
 
 ## Introduction
 
@@ -35,5 +35,7 @@ Here list of interesting endpoints you can check:
 ## License
 
 You can use VSC program to clone the program for free - see the LICENSE file for details.
+
+Made by Patryk, Magda & Malou
 
 MIT
