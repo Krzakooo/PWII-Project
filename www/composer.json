@@ -1,0 +1,26 @@
+{
+  "name": "project/bookworm",
+  "description": "PWII Final Project - Bookworm",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Project\\Bookworm\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Patryk Zak",
+      "email": "patrykgniewomir.zak@students.salle.url.edu"
+    }
+  ],
+  "require": {
+    "ext-pdo": "*",
+    "slim/slim": "^4.0",
+    "slim/psr7": "1.5",
+    "php-di/slim-bridge": "^3.1",
+    "slim/twig-view": "3.3",
+    "ext-json": "*",
+    "psr/http-message": "^1.1"
+  }
+
+}

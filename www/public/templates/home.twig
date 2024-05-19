@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bookworm</title>
+    <style>
+        /* Reset default browser styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Centered container */
+        .centered-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header styles */
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Forum list styles */
+        .forum-details {
+            text-align: center;
+        }
+
+        .post-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .post-list li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .post-list li p {
+            margin: 0;
+        }
+
+        /* Form styles */
+        form {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover,
+        a:focus {
+            color: #444;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="centered-container">
+        <h1>Welcome to Bookworm</h1>
+        <p>Discover, rate, and discuss your favorite books!</p>
+        {% include 'menu.twig' %}
+    </div>
+</body>
+</html>

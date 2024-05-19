@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <style>
+        /* Reset default browser styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Centered container */
+        .centered-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header styles */
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Forum list styles */
+        .forum-details {
+            text-align: center;
+        }
+
+        .post-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .post-list li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .post-list li p {
+            margin: 0;
+        }
+
+        /* Form styles */
+        form {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="centered-container">
+    <div class="forum-details" data-forum-id="{{ forum.forumId }}">
+        <h1>{{ forum.forumName | upper }}</h1>
+        <p>{{ forum.forumDescription }}</p>
+    </div>
+
+    <div class="post-list" id="post-list">
+        <h2>Forum Posts</h2>
+        <ul>
+            {% if posts is empty %}
+                <li>No posts available.</li>
+            {% else %}
+                {% for post in posts %}
+                    <li>
+                        <p>{{ post.content }}</p>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>Create New Post</h2>
+        <form id="create-post-form" method="post" action="/forums/{{ forum.forumId }}/posts">
+            <input type="hidden" id="forumId" name="forumId" value="{{ forum.forumId }}">
+            <input type="hidden" id="userId" name="userId" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+            <label for="content">Contents:</label><br>
+            <input type="text" id="content" name="content" required><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('create-post-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/api/forums/{{ forum.forumId }}/posts', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    console.error('Failed to create post:', response.statusText);
+                    throw new Error('Failed to create post');
+                }
+            })
+            .then(data => {
+                document.getElementById('create-post-form').style.display = 'block';
+
+                const forumList = document.getElementById('post-list');
+                const newForum = document.createElement('li');
+                newForum.innerHTML = `<strong>${data.content}</strong> `;
+                forumList.appendChild(newForum);
+
+                window.location.reload();
+            })
+            .then(response => {
+                if (!response.ok) {
+                  if (response.status === 403) {
+                    // Handle 403 Forbidden error
+                    console.error('Forbidden: Access to this resource is forbidden.');
+                    // Display an error message to the user
+                    alert('403 Forbidden: Access to this resource is forbidden.');
+                  } else {
+                    // Handle other errors
+                    console.error('Error:', response.status);
+                    // Display a generic error message to the user
+                    alert('An error occurred: ' + response.status);
+                  }
+                } else {
+                  // Handle successful response
+                  return response.json(); // or response.text(), etc.
+                }
+              })
+              .then(data => {
+                // Process the data from the server
+                console.log('Data:', data);
+              })
+              .catch(error => {
+                // Handle network errors or other exceptions
+                console.error('Fetch error:', error);
+                // Display an error message to the user
+                alert('An error occurred: ' + error.message);
+              });
+    });
+</script>
+
+
+</body>
+</html>
