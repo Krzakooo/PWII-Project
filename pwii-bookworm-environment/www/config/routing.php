@@ -41,12 +41,13 @@ $pdo = Dependencies::connect();
 $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
 $forumPostService = new ForumPostService($pdo);
+$bookCatalogueService = new $bookCatalogueService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 
 // Routes
@@ -81,7 +82,7 @@ $app->post('/profile', function (Request $request, Response $response, $args) us
 
 // Routing to Discuss Forum
 $app->get('forums', function (Request $request, Response $response) use ($forumController) {
-     return $forumController->getAllForums($request, $response);
+    return $forumController->getAllForums($request, $response);
 });
 
 $app->get('api/forums', function (Request $request, Response $response) use ($forumController) {

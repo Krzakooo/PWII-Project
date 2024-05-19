@@ -23,7 +23,6 @@ class BookCatalogueController
     public function showAddBookForm(Request $request, Response $response): Response
     {
 
-
         $books = $this->service->fetchBooks();
 
         $response->getBody()->write($this->twig->render('catalogue.twig', [
