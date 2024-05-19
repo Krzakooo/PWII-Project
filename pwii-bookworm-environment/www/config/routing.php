@@ -126,7 +126,7 @@ $app->post('/catalogue', function (Request $request, Response $response, $args) 
 });
 
 $app->get('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->getBookSearchResultsJSON($request, $response, $args);
+    return $bookCatalogueController->getBookDetails($request, $response, $args);
 });
 
 $app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {

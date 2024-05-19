@@ -10,12 +10,10 @@ use Bookworm\service\TwigRenderer;
 use Bookworm\service\BookCatalogueService;
 use Bookworm\model\Book;
 
-
 class BookCatalogueController
 {
     private $twig;
     private $service;
-
 
     public function __construct(TwigRenderer $twig, BookCatalogueService $service)
     {
@@ -23,14 +21,54 @@ class BookCatalogueController
         $this->service = $service;
     }
 
+    private function fetchBookSearchResults()
+    {
+        // Hardcoded search strings for different categories
+        $categories = ['action', 'adventure', 'mystery', 'fantasy', 'romance', 'science', 'history', 'biography', 'horror', 'comedy'];
+
+        $allSearchResults = [];
+
+        foreach ($categories as $category) {
+            $url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name";
+
+            $json = file_get_contents($url);
+
+            // Decode JSON data
+            $data = json_decode($json, true);
+
+            if (isset($data['numFound']) && $data['numFound'] > 0) {
+                $searchResults = [];
+
+                foreach ($data['docs'] as $doc) {
+                    $book = [
+                        'title' => $doc['title'],
+                        'author_names' => $doc['author_name'] ?? ['Unknown']
+                    ];
+                    $searchResults[] = $book;
+
+                    // Limit to 10 books per category
+                    if (count($searchResults) >= 10) {
+                        break;
+                    }
+                }
+
+                $allSearchResults[$category] = $searchResults;
+            } else {
+                $allSearchResults[$category] = [];
+            }
+        }
+
+        return $allSearchResults;
+    }
+
     public function showAddBookForm(Request $request, Response $response): Response
     {
-
         $books = $this->service->fetchBooks();
+        $searchResults = $this->fetchBookSearchResults();
 
         $response->getBody()->write($this->twig->render('catalogue.twig', [
-
             'books' => $books,
+            'searchResults' => $searchResults,
         ]));
         return $response->withHeader('Content-Type', 'text/html');
     }
@@ -60,41 +98,21 @@ class BookCatalogueController
         }
     }
 
-    // Get Book Search for category
-    public function getBookSearchResultsJSON($request, $response, $args)
+
+    public function getBookDetails(Request $request, Response $response, $args): Response
     {
-        $searchString = urlencode($args['id']);
+        $bookId = $args['id'];
+        $bookDetails = $this->service->getBookDetails($bookId);
+        $searchResults = $this->fetchBookSearchResults();
 
-        $url = "https://openlibrary.org/search.json?q={$searchString}&fields=title,author_name";
+        $response->getBody()->write($this->twig->render('book_details.twig', [
+            'book' => $bookDetails,
+            'searchResults' => $searchResults
+        ]));
 
-        $json = file_get_contents($url);
-
-        // Decode JSON data
-        $data = json_decode($json, true);
-
-        if ($data['numFound'] > 0) {
-            $searchResults = [];
-
-            foreach ($data['docs'] as $doc) {
-                $book = [
-                    'title' => $doc['title'],
-                    'author_names' => $doc['author_name']
-                ];
-                $searchResults[] = $book;
-            }
-
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode($searchResults));
-            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
-            return $jsonResponse;
-        }
-
-        // If no matching book found, return empty array
-        $emptyResponse = new SlimResponse();
-        $emptyResponse->getBody()->write(json_encode([]));
-        $emptyResponse = $emptyResponse->withHeader('Content-Type', 'application/json');
-        return $emptyResponse;
+        return $response->withHeader('Content-Type', 'text/html');
     }
+
 
     public function rateBook(Request $request, Response $response, $args): Response
     {
@@ -140,8 +158,39 @@ class BookCatalogueController
         return $response->withHeader('Content-Type', 'text/html');
     }
 
+    /* //Search funktion to seach for category till books
+     public function getBookSearchResultsJSON($request, $response, $args)
+    {
+        $searchString = urlencode($args['id']);
 
+        $url = "https://openlibrary.org/search.json?q={$searchString}&fields=title,author_name";
 
+        $json = file_get_contents($url);
 
+        // Decode JSON data
+        $data = json_decode($json, true);
+
+        if (isset($data['numFound']) && $data['numFound'] > 0) {
+            $searchResults = [];
+
+            foreach ($data['docs'] as $doc) {
+                $book = [
+                    'title' => $doc['title'],
+                    'author_names' => $doc['author_name'] ?? ['Unknown']
+                ];
+                $searchResults[] = $book;
+            }
+
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode($searchResults));
+            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+            return $jsonResponse;
+        }
+
+        // If no matching book found, return empty array
+        $emptyResponse = new SlimResponse();
+        $emptyResponse->getBody()->write(json_encode([]));
+        $emptyResponse = $emptyResponse->withHeader('Content-Type', 'application/json');
+        return $emptyResponse;
+    }*/
 }
-
