@@ -129,15 +129,6 @@ $app->get('/catalogue/{id}', function (Request $request, Response $response, $ar
     return $bookCatalogueController->getBookSearchResultsJSON($request, $response, $args);
 });
 
-$app->put('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->updateBook($request, $response, $args);
-});
-
-$app->delete('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->deleteBook($request, $response, $args);
-});
-
-
 $app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
     return $bookCatalogueController->reviewBook($request, $response, $args);
 });
