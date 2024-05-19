@@ -126,16 +126,17 @@ $app->post('/catalogue', function (Request $request, Response $response, $args) 
 });
 
 $app->get('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->showBookDetails($request, $response, $args);
+    return $bookCatalogueController->getBookSearchResultsJSON($request, $response, $args);
 });
 
-$app->put('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->rateBook($request, $response, $args);
+$app->put('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->updateBook($request, $response, $args);
 });
 
-$app->delete('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->deleteRating($request, $response, $args);
+$app->delete('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->deleteBook($request, $response, $args);
 });
+
 
 $app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
     return $bookCatalogueController->reviewBook($request, $response, $args);

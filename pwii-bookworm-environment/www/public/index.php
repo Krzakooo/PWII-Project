@@ -76,7 +76,7 @@ $app->post('/api/forums/{forumId}/posts', [$forumPostController, 'createForumPos
 
 $app->get('/catalogue', [$bookCatalogueController, 'showAddBookForm']);
 $app->post('/catalogue', [$bookCatalogueController , 'addBookToCatalogue']);
-$app->get('/catalogue/{id}', [$bookCatalogueController, 'showBookDetails']);
+$app->get('/catalogue/{id}', [$bookCatalogueController, 'getBookSearchResultsJSON']);
 $app->put('/catalogue/{id}/rate', [$bookCatalogueController, 'rateBook']);
 $app->delete('/catalogue/{id}/rate', [$bookCatalogueController, 'deleteRating']);
 $app->put('/catalogue/{id}/review', [$bookCatalogueController, 'reviewBook']);

@@ -8,11 +8,56 @@
 <body>
 <h1>Book Catalogue</h1>
 
-<h2>All Available Books</h2>
-<ul>
-    {% for book in books %}
-        <li>{{ book.title }} by {{ book.author }}</li>
-    {% endfor %}
+<label for="searchInput">Search by title or author:</label>
+<input type="text" id="searchInput" placeholder="Search by title or author">
+<button onclick="searchBooks()">Search</button>
+
+<h2>Search Results</h2>
+<ul id="searchResults">
 </ul>
+
+<script>
+    function searchBooks() {
+        // Get the search input value
+        const searchString = document.getElementById("searchInput").value;
+
+        // Make a fetch request to your backend route
+        fetch('/catalogue/' + encodeURIComponent(searchString))
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous search results
+                const searchResults = document.getElementById("searchResults");
+                searchResults.innerHTML = '';
+
+                // Check if there are any search results
+                if (data && data.length > 0) {
+                    // If there are search results, iterate over each book
+                    data.forEach(book => {
+                        // Create list item for each search result
+                        const li = document.createElement("li");
+
+                        // Add title
+                        const title = document.createElement("h3");
+                        title.textContent = book.title;
+                        li.appendChild(title);
+
+                        // Add author names
+                        const authors = document.createElement("p");
+                        authors.textContent = "Authors: " + book.author_names.join(", ");
+                        li.appendChild(authors);
+
+                        // Append list item to search results
+                        searchResults.appendChild(li);
+                    });
+                } else {
+                    // If no search results found
+                    const li = document.createElement("li");
+                    li.textContent = "No results found";
+                    searchResults.appendChild(li);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>

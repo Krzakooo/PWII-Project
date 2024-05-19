@@ -8,11 +8,24 @@ use PDO;
 class BookCatalogueService
 {
     private $db;
+    const OPENLIBRARY_ISBN_URL = 'https://openlibrary.org/isbn/';
+    const OPENLIBRARY_WORKS_URL = 'https://openlibrary.org/works/';
+    const OPENLIBRARY_AUTHORS_URL = 'https://openlibrary.org/authors/';
+    const OPENLIBRARY_COVER_URL = 'https://covers.openlibrary.org/b/id/';
 
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
+
+
+    private function fetchData($url)
+    {
+        $response = file_get_contents($url);
+        return $response ? json_decode($response, true) : null;
+    }
+
+
 
     public function fetchBooks(): array
     {
@@ -58,7 +71,7 @@ class BookCatalogueService
             'author' => $book->getAuthor(),
             'description' => $book->getDescription(),
             'pages' => $book->getPages(),
-            'cover_url' => $book->getCoverUrl(),
+            'cover_url' => $book->getCover(),
         ]);
     }
 
@@ -136,5 +149,24 @@ class BookCatalogueService
         $coverUrl = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg" : 'No cover available';
 
         return new Book($title, $authorName, $description, $pages, $coverUrl);
+    }
+
+    public function updateBook(int $bookId, Book $updatedBook): void
+    {
+        $stmt = $this->db->prepare("UPDATE books SET title = :title, author = :author, description = :description, pages = :pages, cover_url = :cover_url WHERE id = :id");
+        $stmt->execute([
+            'id' => $bookId,
+            'title' => $updatedBook->getTitle(),
+            'author' => $updatedBook->getAuthor(),
+            'description' => $updatedBook->getDescription(),
+            'pages' => $updatedBook->getPages(),
+            'cover_url' => $updatedBook->getCover(),
+        ]);
+    }
+
+    public function deleteBook(int $bookId): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM books WHERE id = :id");
+        $stmt->execute(['id' => $bookId]);
     }
 }
