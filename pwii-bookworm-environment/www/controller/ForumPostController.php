@@ -19,11 +19,12 @@ class ForumPostController
     private ForumService $forumService;
     private AuthService $authService;
 
-    public function __construct(TwigRenderer     $twigRenderer,
-                                ForumPostService $forumPostService,
-                                ForumService     $forumService,
-                                AuthService      $authService)
-    {
+    public function __construct(
+        TwigRenderer $twigRenderer,
+        ForumPostService $forumPostService,
+        ForumService $forumService,
+        AuthService $authService
+    ) {
         $this->twigRenderer = $twigRenderer;
         $this->forumPostService = $forumPostService;
         $this->forumService = $forumService;
@@ -32,7 +33,22 @@ class ForumPostController
 
     public function renderForumPostsPage(Request $request, Response $response, array $args)
     {
-        $forumId = (int)$args['forumId'];
+        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
+        $usernameDefined = isset($_SESSION['username']) && !empty($_SESSION['username']);
+
+        if (!$authenticated) {
+            if ($request->getUri()->getPath() !== '/api/forums') {
+                return $response->withHeader('Location', '/sign-in')->withStatus(302);
+            } else {
+                $responseData = json_encode(['error' => 'Unauthorized']);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(401)->withBody($responseData);
+            }
+        } else if (!$usernameDefined && strpos($request->getUri()->getPath(), '/api/') === 0) {
+            $responseData = json_encode(['error' => 'Forbidden']);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(403)->withBody($responseData);
+        }
+
+        $forumId = (int) $args['forumId'];
 
         $forumData = $this->forumService->getForumById($forumId);
         $forumPosts = $this->forumPostService->getForumPostsByForumId($forumId);
@@ -64,7 +80,7 @@ class ForumPostController
             }
 
             $userId = $_SESSION['user_id'];
-            $forumId = (int)$request->getAttribute('forumId');
+            $forumId = (int) $request->getAttribute('forumId');
 
             $userId = $_SESSION['user_id'];
             $data = $request->getParsedBody();
