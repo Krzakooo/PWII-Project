@@ -312,20 +312,22 @@
         });
     });
 
+    //Get functions not working
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('.books-container').addEventListener('click', (event) => {
+        document.querySelector('.categories').addEventListener('click', (event) => {
             const clickedElement = event.target.closest('.book-item');
             if (clickedElement) {
                 const bookId = clickedElement.dataset.bookId;
                 fetch(`/catalogue/${bookId}`)
                     .then(response => response.json())
                     .then(data => {
-                        window.location.href = `catalogue/?id=${bookId}`;
+                        window.location.href = `/catalogue?id=${bookId}`;
                     })
                     .catch(error => console.error('Error:', error));
             }
         });
     });
+
 
 
 
