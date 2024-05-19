@@ -1,19 +1,19 @@
 <nav class="navbar">
     <ul class="menu-list">
-        <li><a href="/"><b>Bookworm</b></a></li>
+        <li><a class="logo menuit" href="/"><b>𝓑𝓞𝓞𝓚𝓦𝓞𝓡𝓜</b></a></li>
   
         {% if isLoggedIn %}
             <li>
-                <form action="/logout" method="post">
+                <form class="menuit" action="/logout" method="post">
                     <button type="submit">Logout</button>
                 </form>
             </li>
-            <li><a href="/profile">Profile</a></li>
-            <li><a href="/catalogue">Book Catalogue</a></li>
-            <li><a href="/forums">Forums</a></li>
+            <li><a class="menuit" href="/profile">Profile</a></li>
+            <li><a class="menuit" href="/catalogue">Book Catalogue</a></li>
+            <li><a class="menuit" href="/forums">Forums</a></li>
         {% else %}
-            <li><a href="/sign-in">Sign In</a></li>
-            <li><a href="/sign-up">Sign Up</a></li>
+            <li><a class="menuit" href="/sign-in">Sign In</a></li>
+            <li><a class="menuit" href="/sign-up">Sign Up</a></li>
         {% endif %}
     </ul>
 </nav>

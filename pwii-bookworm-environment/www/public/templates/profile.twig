@@ -27,6 +27,10 @@
             margin: 0 auto;
         }
 
+        ul {
+            list-style-type: none;
+        }
+
         /* Header styles */
         h1 {
             margin-bottom: 20px;
@@ -56,7 +60,7 @@
         }
 
         /* Form styles */
-        form {
+        form.form {
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -88,40 +92,60 @@
             box-sizing: border-box;
         }
 
-        button[type="submit"],
-        input[type="submit"], .custom-file-upload {
-            font-size: small;
+        
+
+        .logo {
+            font-size: 22px !important;
+        }
+        
+        
+        form.menuit {
+            margin-bottom: 20px;
+        }
+
+        button[type="submit"] {
+            text-align: left;
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-        }
-
-        button[type="submit"]:hover,
-        input[type="submit"]:hover, .custom-file-upload:hover {
-            background-color: #45a049;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        a {
-            color: #333;
-            text-decoration: none;
+            font-size: 16px;
+            width: 200px;
             transition: color 0.3s ease;
         }
 
-        a:hover,
-        a:focus {
-            color: #444;
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        a.menuit {
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+            background-color: #4CAF50;
+            color: white !important;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        a.menuit:hover,
+        a.menuit:focus {
             text-decoration: underline;
+            background-color: #45a049;
         }
 
         a:visited {
             color: #555;
+        }
+        ul {
+            list-style-type: none;
         }
 
 
@@ -132,6 +156,7 @@
 </head>
 <body>
     <div class="centered-container">
+    {% include 'menu.twig' %}
         <h1>User Profile</h1>
         {% if flashyMessages %}
             <h2 style="color: red;">{{ flashyMessages }}</h2>
@@ -156,7 +181,7 @@
         {% endif %}
 
         {% if currentUser %}
-            <form action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
+            <form class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email">
 
