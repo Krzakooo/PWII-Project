@@ -147,10 +147,33 @@
         #createBookForm button[type="submit"]:hover {
             background-color: #45a049;
         }
+        #createBookBtn {
+             background-color: #4CAF50;
+             color: white;
+             padding: 10px 20px;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             margin-bottom: 20px;
+             text-align: center;
+         }
 
-        /* Cancel button styles */
+        #createBookBtn:hover {
+            background-color: #45a049;
+        }
+
+        /* Styles for Cancel button */
         .cancel-btn {
             background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d32f2f;
         }
 
     </style>
@@ -158,28 +181,6 @@
 <body>
 <div class="centered-container">
     <h1>Book Catalogue</h1>
-
-    <div class="categories">
-        {% for category, books in searchResults %}
-            <div class="category" data-category="{{ category }}">
-                <h2>{{ category|capitalize }}</h2>
-                <ul class="books">
-                    {% for book in books %}
-                        <li>
-                            <h3>{{ book.title }}</h3>
-                            <p>Authors: {{ book.author_names|join(', ') }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="pagination">
-                    <button class="prev" data-category="{{ category }}">Back</button>
-                    <button class="next" data-category="{{ category }}">Next</button>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-
     <!-- Create New Book button -->
     <button id="createBookBtn">Create New Book</button>
 
@@ -197,6 +198,30 @@
         <button type="submit">Create Book</button>
         <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
     </form>
+
+    <div class="categories">
+        {% for category, books in searchResults %}
+            <div class="category" data-category="{{ category }}">
+                <h2>{{ category|capitalize }}</h2>
+                <ul class="books">
+                    {% for book in books %}
+                        <li class="book-item" data-book-id="{{ book.id }}">
+                            <div class="book-details">
+                                <h3>{{ book.title }}</h3>
+                                <p>Authors: {{ book.author_names|join(', ') }}</p>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="pagination">
+                    <button class="prev" data-category="{{ category }}">Back</button>
+                    <button class="next" data-category="{{ category }}">Next</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
 </div>
 
 <script>
@@ -286,6 +311,22 @@
             updatePagination();
         });
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.books-container').addEventListener('click', (event) => {
+            const clickedElement = event.target.closest('.book-item');
+            if (clickedElement) {
+                const bookId = clickedElement.dataset.bookId;
+                fetch(`/catalogue/${bookId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        window.location.href = `catalogue/?id=${bookId}`;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    });
+
 
 
 </script>
