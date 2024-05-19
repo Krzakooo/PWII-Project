@@ -114,19 +114,33 @@ $app->post('/api/forums/{id}/posts', function (Request $request, Response $respo
 });
 
 //Book Catalogue
-$app->get('/catalogue', function (Request $request, Response $response, $args) use ($authController) {
-
-});
-
 $app->get('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->showAddBookForm($request, $response, $args);
-});
-$app->post('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->addBookToCatalogue($request, $response, $args);
+    return $bookCatalogueController->showAddBookForm($request, $response);
 });
 
-$app->post('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->handleImportForm($request);
+$app->post('/catalogue', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->addBookToCatalogue($request, $response);
 });
+
+$app->get('/catalogue/{id}', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->showBookDetails($request, $response, $args);
+});
+
+$app->put('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->rateBook($request, $response, $args);
+});
+
+$app->delete('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->deleteRating($request, $response, $args);
+});
+
+$app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->reviewBook($request, $response, $args);
+});
+
+$app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
+    return $bookCatalogueController->deleteReview($request, $response, $args);
+});
+
 
 $app->run();
