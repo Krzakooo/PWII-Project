@@ -4,53 +4,284 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Catalogue</title>
+    <style>
+        /* Reset default browser styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Centered container */
+        .centered-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header styles */
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Search form styles */
+        #searchForm {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #searchForm label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #searchInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Button styles */
+        #searchBtn,
+        #createBookBtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #searchBtn:hover,
+        #createBookBtn:hover {
+            background-color: #45a049;
+        }
+
+        /* Search results styles */
+        #searchResults {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #searchResults li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        #searchResults li h3 {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #searchResults li p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        /* Create Book form styles */
+        #createBookForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            z-index: 1000; /* Ensure the form is on top of other elements */
+            width: 80%; /* Adjust the width of the form */
+        }
+
+        #createBookForm label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #createBookForm input[type="text"],
+        #createBookForm input[type="number"],
+        #createBookForm textarea {
+            width: calc(100% - 22px); /* Adjust the width of the input fields */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        #createBookForm button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #createBookForm button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        /* Button styles */
+        #searchBtn,
+        #createBookBtn,
+        .cancel-btn { /* Added .cancel-btn class */
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+        }
+
+    </style>
+
 </head>
 <body>
-<h1>Book Catalogue</h1>
+<div class="centered-container">
+    <h1>Book Catalogue</h1>
 
-<label for="searchInput">Search by title or author:</label>
-<input type="text" id="searchInput" placeholder="Search by title or author">
-<button onclick="searchBooks()">Search</button>
+    <!-- Search form -->
+    <form id="searchForm">
+        <label for="searchInput">Search by title or author:</label>
+        <input type="text" id="searchInput" placeholder="Search by title or author">
+        <button type="button" id="searchBtn">Search</button>
+    </form>
 
-<h2>Search Results</h2>
-<ul id="searchResults">
-</ul>
 
-<script>
+    <!-- Search results -->
+    <h2>Search Results</h2>
+    <ul id="searchResults">
+    </ul>
+
+    <!-- Create New Book button -->
+    <button id="createBookBtn">Create New Book</button>
+
+    <!-- Create New Book form -->
+    <form id="createBookForm">
+        <label for="titleInput">Title:</label>
+        <input type="text" id="titleInput" name="title" required><br>
+        <label for="authorInput">Author:</label>
+        <input type="text" id="authorInput" name="author" required><br>
+        <label for="descriptionInput">Description:</label>
+        <textarea id="descriptionInput" name="description" required></textarea><br>
+        <label for="pagesInput">Number of pages:</label>
+        <input type="number" id="pagesInput" name="pages" required><br>
+        <label for="coverInput">Cover image URL:</label>
+        <input type="text" id="coverInput" name="cover"><br>
+        <button type="submit">Create Book</button>
+        <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+    </form>
+
+    <script>
+    const createBookBtn = document.getElementById('createBookBtn');
+    const createBookForm = document.getElementById('createBookForm');
+
+    createBookBtn.addEventListener('click', function() {
+        createBookForm.style.display = 'block';
+    });
+
+    const cancelBtn = document.getElementById('cancelBtn'); // Select the Cancel button
+
+    cancelBtn.addEventListener('click', function() { // Add event listener for click event
+        createBookForm.reset(); // Reset the form
+        createBookForm.style.display = 'none'; // Hide the form
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === createBookForm) {
+            createBookForm.style.display = 'none';
+        }
+    });
+
+    createBookForm.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
+    createBookForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/catalogue', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.book_id) {
+                    alert('Book created successfully with ID: ' + data.book_id);
+
+                    createBookForm.reset();
+                    createBookForm.style.display = 'none';
+                } else {
+                    alert('Failed to create book. Please check your input data.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        searchBooks();
+    });
+
     function searchBooks() {
-        // Get the search input value
+
+        const searchResults = document.getElementById("searchResults");
+        searchResults.innerHTML = '';
+
         const searchString = document.getElementById("searchInput").value;
 
-        // Make a fetch request to your backend route
         fetch('/catalogue/' + encodeURIComponent(searchString))
             .then(response => response.json())
             .then(data => {
-                // Clear previous search results
-                const searchResults = document.getElementById("searchResults");
-                searchResults.innerHTML = '';
-
-                // Check if there are any search results
                 if (data && data.length > 0) {
-                    // If there are search results, iterate over each book
                     data.forEach(book => {
-                        // Create list item for each search result
                         const li = document.createElement("li");
 
-                        // Add title
                         const title = document.createElement("h3");
-                        title.textContent = book.title;
+                        title.textContent = "Title: " + book.title;
                         li.appendChild(title);
 
-                        // Add author names
                         const authors = document.createElement("p");
                         authors.textContent = "Authors: " + book.author_names.join(", ");
                         li.appendChild(authors);
 
-                        // Append list item to search results
+                        const description = document.createElement("p");
+                        description.textContent = "Description: " + book.description;
+                        li.appendChild(description);
+
+                        const pages = document.createElement("p");
+                        pages.textContent = "Pages: " + book.pages;
+                        li.appendChild(pages);
+
+                        const cover = document.createElement("p");
+                        cover.textContent = "Cover: " + book.cover;
+                        li.appendChild(cover);
+
                         searchResults.appendChild(li);
                     });
                 } else {
-                    // If no search results found
                     const li = document.createElement("li");
                     li.textContent = "No results found";
                     searchResults.appendChild(li);
@@ -58,6 +289,8 @@
             })
             .catch(error => console.error('Error:', error));
     }
+
 </script>
+
 </body>
 </html>

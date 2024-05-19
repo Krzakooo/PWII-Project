@@ -11,9 +11,8 @@ class Book
     private $pages;
     private $cover;
 
-    public function __construct($id, $title, $author, $description, $pages, $cover = null)
+    public function __construct($title, $author, $description = 'N/A', $pages = 'N/A', $cover = null)
     {
-        $this->id = $id;
         $this->title = $title;
         $this->author = $author;
         $this->description = $description;
