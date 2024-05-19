@@ -7,6 +7,8 @@ use PDO;
 class BookCatalogueService
 {
     private $db;
+
+    //For the API
     const OPENLIBRARY_ISBN_URL = 'https://openlibrary.org/isbn/';
     const OPENLIBRARY_WORKS_URL = 'https://openlibrary.org/works/';
     const OPENLIBRARY_AUTHORS_URL = 'https://openlibrary.org/authors/';
@@ -15,12 +17,6 @@ class BookCatalogueService
     public function __construct(PDO $db)
     {
         $this->db = $db;
-    }
-
-    private function fetchData($url)
-    {
-        $response = file_get_contents($url);
-        return $response ? json_decode($response, true) : null;
     }
 
     public function saveBook(string $title, string $author, string $description, int $pages, string $cover): ?int
@@ -73,20 +69,6 @@ class BookCatalogueService
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function getBookRatings($bookId): array
-    {
-        $stmt = $this->db->prepare("SELECT rating FROM ratings WHERE book_id = :book_id");
-        $stmt->execute(['book_id' => $bookId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getBookReviews($bookId): array
-    {
-        $stmt = $this->db->prepare("SELECT review FROM reviews WHERE book_id = :book_id");
-        $stmt->execute(['book_id' => $bookId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function saveRating($bookId, $rating): void
     {
         $stmt = $this->db->prepare("INSERT INTO ratings (book_id, rating) VALUES (:book_id, :rating) ON DUPLICATE KEY UPDATE rating = :rating");
@@ -117,43 +99,17 @@ class BookCatalogueService
         $stmt->execute(['book_id' => $bookId]);
     }
 
-    public function handleImportForm($isbn): ?array
+    public function bookExists(string $title, string $author): bool
     {
-        $url = "https://openlibrary.org/isbn/{$isbn}.json";
-        $response = file_get_contents($url);
-
-        if ($response === false) {
-            return null;
-        }
-
-        $bookData = json_decode($response, true);
-
-        $title = $bookData['title'];
-        $pages = $bookData['number_of_pages'] ?? 'N/A';
-        $workIdentifier = $bookData['works'][0]['key'];
-        $coverId = $bookData['covers'][0] ?? null;
-
-        $workUrl = "https://openlibrary.org{$workIdentifier}.json";
-        $workResponse = file_get_contents($workUrl);
-        $workData = json_decode($workResponse, true);
-        $description = $workData['description']['value'] ?? 'No description available';
-
-        $authorIdentifier = $workData['authors'][0]['key'];
-        $authorUrl = "https://openlibrary.org{$authorIdentifier}.json";
-        $authorResponse = file_get_contents($authorUrl);
-        $authorData = json_decode($authorResponse, true);
-        $authorName = $authorData['name'] ?? 'Unknown';
-
-        $coverUrl = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg" : 'No cover available';
-
-        return [
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM books WHERE title = :title AND author = :author");
+        $stmt->execute([
             'title' => $title,
-            'author' => $authorName,
-            'description' => $description,
-            'pages' => $pages,
-            'cover' => $coverUrl,
-        ];
+            'author' => $author
+        ]);
+        $count = $stmt->fetchColumn();
+        return $count > 0;
     }
+
 
 
 }

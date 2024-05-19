@@ -20,7 +20,6 @@ class BookCatalogueController
         $this->twig = $twig;
         $this->service = $service;
     }
-
     private function fetchBookSearchResults()
     {
         // Hardcoded search strings for different categories
@@ -44,10 +43,30 @@ class BookCatalogueController
                         'title' => $doc['title'],
                         'author_names' => $doc['author_name'] ?? ['Unknown']
                     ];
-                    $searchResults[] = $book;
 
-                    // Limit to 10 books per category
-                    if (count($searchResults) >= 10) {
+                    // Check if the book already exists in the database
+                    if (!$this->service->bookExists($book['title'], implode(', ', $book['author_names']))) {
+                        // Save book to the database
+                        $bookId = $this->service->saveBook(
+                            $book['title'],
+                            implode(', ', $book['author_names']),
+                            '',
+                            0,
+                            ''
+                        );
+
+                        // If book is saved successfully, add it to search results
+                        if ($bookId !== null) {
+                            $searchResults[] = [
+                                'id' => $bookId,
+                                'title' => $book['title'],
+                                'author_names' => $book['author_names']
+                            ];
+                        }
+                    }
+
+                    // Limit to 5 books per category
+                    if (count($searchResults) >= 5) {
                         break;
                     }
                 }
@@ -60,6 +79,7 @@ class BookCatalogueController
 
         return $allSearchResults;
     }
+
 
     public function showAddBookForm(Request $request, Response $response): Response
     {
@@ -117,8 +137,10 @@ class BookCatalogueController
             'book' => $bookDetails,
             'searchResults' => $searchResults
         ]));
-
-        return $response->withHeader('Content-Type', 'text/html');
+        $jsonResponse = new SlimResponse();
+        $jsonResponse->getBody()->write(json_encode($response));
+        $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+        return $jsonResponse;
     }
 
 
