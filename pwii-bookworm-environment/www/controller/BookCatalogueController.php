@@ -66,12 +66,23 @@ class BookCatalogueController
         $books = $this->service->fetchBooks();
         $searchResults = $this->fetchBookSearchResults();
 
-        $response->getBody()->write($this->twig->render('catalogue.twig', [
+        // Render Twig template with data
+        $htmlContent = $this->twig->render('catalogue.twig', [
             'books' => $books,
             'searchResults' => $searchResults,
-        ]));
-        return $response->withHeader('Content-Type', 'text/html');
+        ]);
+
+        // Create a new response object
+        $htmlResponse = new SlimResponse();
+        $htmlResponse->getBody()->write($htmlContent);
+
+        // Set content type header
+        $htmlResponse = $htmlResponse->withHeader('Content-Type', 'text/html');
+
+        return $htmlResponse;
     }
+
+
 
     public function addBookToCatalogue(Request $request, Response $response): Response
     {

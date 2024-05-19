@@ -159,12 +159,18 @@
 <div class="centered-container">
     <h1>Book Catalogue</h1>
 
-    <!-- Categories and books -->
     <div class="categories">
         {% for category, books in searchResults %}
             <div class="category" data-category="{{ category }}">
                 <h2>{{ category|capitalize }}</h2>
-                <ul class="books"></ul>
+                <ul class="books">
+                    {% for book in books %}
+                        <li>
+                            <h3>{{ book.title }}</h3>
+                            <p>Authors: {{ book.author_names|join(', ') }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
                 <div class="pagination">
                     <button class="prev" data-category="{{ category }}">Back</button>
                     <button class="next" data-category="{{ category }}">Next</button>
@@ -172,6 +178,7 @@
             </div>
         {% endfor %}
     </div>
+
 
     <!-- Create New Book button -->
     <button id="createBookBtn">Create New Book</button>
