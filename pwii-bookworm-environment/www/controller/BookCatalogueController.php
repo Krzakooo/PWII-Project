@@ -82,8 +82,6 @@ class BookCatalogueController
         return $htmlResponse;
     }
 
-
-
     public function addBookToCatalogue(Request $request, Response $response): Response
     {
         try {
@@ -108,7 +106,6 @@ class BookCatalogueController
             return $response->withStatus(500);
         }
     }
-
 
     public function getBookDetails(Request $request, Response $response, $args): Response
     {
