@@ -108,6 +108,23 @@ class BookCatalogueService
         ]);
     }
 
+    public function updateBookDetails($bookId, $title, $author, $description, $pages, $cover)
+    {
+        $sql = "UPDATE books SET title = :title, author = :author, description = :description, pages = :pages, cover = :cover WHERE id = :bookId";
+        $stmt = $this->db->prepare($sql);
+        $success = $stmt->execute([
+            'title' => $title,
+            'author' => $author,
+            'description' => $description,
+            'pages' => $pages,
+            'cover' => $cover,
+            'bookId' => $bookId,
+        ]);
+
+        return $success;
+    }
+
+
     public function deleteReview($bookId): void
     {
         $stmt = $this->db->prepare("DELETE FROM reviews WHERE book_id = :book_id");

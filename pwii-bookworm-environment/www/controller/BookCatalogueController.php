@@ -20,6 +20,8 @@ class BookCatalogueController
         $this->twig = $twig;
         $this->service = $service;
     }
+
+
     private function fetchBookSearchResults()
     {
         // Hardcoded search strings for different categories
@@ -28,7 +30,7 @@ class BookCatalogueController
         $allSearchResults = [];
 
         foreach ($categories as $category) {
-            $url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name";
+            $url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name,cover_i";
 
             $json = file_get_contents($url);
 
@@ -40,8 +42,16 @@ class BookCatalogueController
                 foreach ($data['docs'] as $doc) {
                     $book = [
                         'title' => $doc['title'],
-                        'author_names' => $doc['author_name'] ?? ['Unknown']
+                        'author_names' => $doc['author_name'] ?? ['Unknown'],
+                        'cover_i' => $doc['cover_i'] ?? null
                     ];
+
+                    $cover_url = null;
+
+                    // Check if cover_i exists and fetch cover URL
+                    if ($book['cover_i']) {
+                        $cover_url = "https://covers.openlibrary.org/b/id/{$book['cover_i']}-L.jpg";
+                    }
 
                     // Check if the book already exists in the database
                     $bookId = $this->service->getBookId($book['title'], implode(', ', $book['author_names']));
@@ -53,7 +63,7 @@ class BookCatalogueController
                             implode(', ', $book['author_names']),
                             '',
                             0,
-                            ''
+                            $cover_url
                         );
                     }
 
@@ -61,9 +71,9 @@ class BookCatalogueController
                     $searchResults[] = [
                         'id' => $bookId,
                         'title' => $book['title'],
-                        'author_names' => $book['author_names']
+                        'author_names' => $book['author_names'],
+                        'cover_url' => $cover_url
                     ];
-
                 }
             }
 
