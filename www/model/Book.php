@@ -18,6 +18,7 @@ class Book
         $this->description = $description;
         $this->pages = $pages;
         $this->cover = $cover;
+
     }
 
     // Getters and setters
