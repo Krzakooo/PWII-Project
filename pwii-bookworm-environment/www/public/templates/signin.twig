@@ -115,8 +115,8 @@
         .logo {
             font-size: 22px !important;
         }
-        
-        
+
+
         form.menuit {
             margin-bottom: 20px;
         }
@@ -168,27 +168,27 @@
     </style>
 </head>
 <body>
-    <div class="centered-container">
+<div class="centered-container">
     {% include 'menu.twig' %}
-        <h1>Sign In</h1>
-        <form class="form" action="/sign-in" method="post" data-cy="sign-in">
-            {% if errors is defined and errors %}
-                <ul>
-                    {% for error in errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="{{ data.email ?? '' }}" required data-cy="sign-in__email">
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required data-cy="sign-in__password">
-            </div>
-            <button type="submit" data-cy="sign-in__btn">Sign In</button>
-        </form>
-    </div>
+    <h1>Sign In</h1>
+    <form class="form" action="/sign-in" method="post" data-cy="sign-in">
+        {% if errors is defined and errors %}
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ data.email ?? '' }}" required data-cy="sign-in__email">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required data-cy="sign-in__password">
+        </div>
+        <button type="submit" data-cy="sign-in__btn">Sign In</button>
+    </form>
+</div>
 </body>
 </html>

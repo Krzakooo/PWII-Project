@@ -116,8 +116,8 @@
         .logo {
             font-size: 22px !important;
         }
-        
-        
+
+
         form.menuit {
             margin-bottom: 20px;
         }
@@ -169,35 +169,35 @@
     </style>
 </head>
 <body>
-    <div class="centered-container">
+<div class="centered-container">
     {% include 'menu.twig' %}
-        <h1>Sign Up</h1>
-        <form class="form" action="/sign-up" method="post" data-cy="sign-up">
-            {% if errors is defined and errors %}
-                <ul>
-                    {% for error in errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="{{ data.username ?? '' }}" required data-cy="sign-up__username">
-            </div>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="{{ data.email ?? '' }}" required data-cy="sign-up__email">
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required data-cy="sign-up__password">
-            </div>
-            <div>
-                <label for="repeatPassword">Repeat Password:</label>
-                <input type="password" id="repeatPassword" name="repeatPassword" required data-cy="sign-up__repeatPassword">
-            </div>
-            <button type="submit" data-cy="sign-up__btn">Sign Up</button>
-        </form>
-    </div>
+    <h1>Sign Up</h1>
+    <form class="form" action="/sign-up" method="post" data-cy="sign-up">
+        {% if errors is defined and errors %}
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ data.username ?? '' }}" required data-cy="sign-up__username">
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ data.email ?? '' }}" required data-cy="sign-up__email">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required data-cy="sign-up__password">
+        </div>
+        <div>
+            <label for="repeatPassword">Repeat Password:</label>
+            <input type="password" id="repeatPassword" name="repeatPassword" required data-cy="sign-up__repeatPassword">
+        </div>
+        <button type="submit" data-cy="sign-up__btn">Sign Up</button>
+    </form>
+</div>
 </body>
 </html>

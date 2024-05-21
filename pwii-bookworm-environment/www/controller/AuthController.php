@@ -29,7 +29,7 @@ class AuthController
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
-        
+
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $content = $this->twig->render('signin.twig', ['isLoggedIn' => $isLoggedIn]);
@@ -61,7 +61,7 @@ class AuthController
 
         if ($this->authService->login($email, $password)) {
             $user = $this->authService->getUserByEmail($email);
-            
+
             $_SESSION['user_id'] = $user->getId();
             return $response->withHeader('Location', '/')->withStatus(302);
         } else {

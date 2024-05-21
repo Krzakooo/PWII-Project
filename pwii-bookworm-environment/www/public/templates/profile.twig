@@ -68,7 +68,7 @@
             margin-top: 20px;
         }
 
-        
+
 
         label {
             display: block;
@@ -92,13 +92,13 @@
             box-sizing: border-box;
         }
 
-        
+
 
         .logo {
             font-size: 22px !important;
         }
-        
-        
+
+
         form.menuit {
             margin-bottom: 20px;
         }
@@ -151,62 +151,62 @@
 
 
 
-        
+
     </style>
 </head>
 <body>
-    <div class="centered-container">
+<div class="centered-container">
     {% include 'menu.twig' %}
-        <h1>User Profile</h1>
-        {% if flashyMessages %}
-            <h2 style="color: red;">{{ flashyMessages }}</h2>
+    <h1>User Profile</h1>
+    {% if flashyMessages %}
+        <h2 style="color: red;">{{ flashyMessages }}</h2>
+    {% endif %}
+
+    {% if errors %}
+        <div style="color: red;">
+            {% for error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% if post %}
+            <div style="color: green;">Profile updated successfully!</div>
         {% endif %}
+    {% endif %}
 
-        {% if errors %}
-            <div style="color: red;">
-                {% for error in errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% else %}
-            {% if post %}
-                <div style="color: green;">Profile updated successfully!</div>
-            {% endif %}
-        {% endif %}
+    {% if profilePictureUrl %}
+        <img src="{{ profilePictureUrl }}" alt="Profile Picture">
+    {% else %}
+        <p>No profile picture available</p>
+    {% endif %}
 
-        {% if profilePictureUrl %}
-            <img src="{{ profilePictureUrl }}" alt="Profile Picture">
-        {% else %}
-            <p>No profile picture available</p>
-        {% endif %}
+    {% if currentUser %}
+        <form class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email">
 
-        {% if currentUser %}
-            <form class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ currentUser.getUsername() }}" data-cy="profile__username">
 
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="{{ currentUser.getUsername() }}" data-cy="profile__username">
+            <label id="picture_label" class="custom-file-upload" for="profile_picture">Upload a Profile Picture</label>
+            <input type="file" id="profile_picture" name="profile_picture" accept="image/png, image/jpeg, image/gif, image/svg+xml" data-cy="profile__picture">
+            <script>
+                document.getElementById('profile_picture').addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        document.getElementById('picture_label').innerText = "File uploaded successfully";
+                        document.getElementById('picture_label').style.color = "green";
+                    } else {
+                        document.getElementById('picture_label').innerText = "Upload a Profile Picture";
+                    }
+                });
+            </script>
+            <input type="submit" value="Update Profile" data-cy="profile__btn">
+        </form>
+    {% else %}
+        <p>User not found.</p>
+    {% endif %}
 
-                <label id="picture_label" class="custom-file-upload" for="profile_picture">Upload a Profile Picture</label>
-                <input type="file" id="profile_picture" name="profile_picture" accept="image/png, image/jpeg, image/gif, image/svg+xml" data-cy="profile__picture">
-                 <script>
-                    document.getElementById('profile_picture').addEventListener('change', function() {
-                        if (this.files.length > 0) {
-                            document.getElementById('picture_label').innerText = "File uploaded successfully";
-                            document.getElementById('picture_label').style.color = "green";
-                        } else {
-                            document.getElementById('picture_label').innerText = "Upload a Profile Picture";
-                        }
-                    });
-                </script>
-                <input type="submit" value="Update Profile" data-cy="profile__btn">
-            </form>
-        {% else %}
-            <p>User not found.</p>
-        {% endif %}
-
-        <a href="/forums" style="margin-top: 20px;">Go to Forums</a>
-    </div>
+    <a href="/forums" style="margin-top: 20px;">Go to Forums</a>
+</div>
 </body>
 </html>

@@ -107,7 +107,7 @@ class ForumController
 //                    return $response->withHeader('Content-Type', 'text/html')->withStatus(401);
 //                }
 //            }
-       // }
+        // }
         try {
             $forumId = $args['id'];
             $forum = $this->forumService->getForumById($forumId);

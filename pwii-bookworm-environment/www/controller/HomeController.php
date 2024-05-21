@@ -18,7 +18,7 @@ class HomeController
     public function index(Request $request, Response $response): Response
     {
         session_start();
-        
+
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $content = $this->twig->render('home.twig', ['isLoggedIn' => $isLoggedIn]);
