@@ -27,8 +27,8 @@ CREATE TABLE books
     title       VARCHAR(65535) NOT NULL,
     author      VARCHAR(65535) NOT NULL,
     description TEXT,
-    page_number INT            NOT NULL,
-    cover_image VARCHAR(65535),
+    pages INT            NOT NULL,
+    cover VARCHAR(65535),
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -79,8 +79,7 @@ CREATE TABLE posts
     id         INT AUTO_INCREMENT PRIMARY KEY,
     user_id    INT          NOT NULL,
     forum_id   INT          NOT NULL,
-    title      VARCHAR(255) NOT NULL,
-    contents   TEXT,
+    content   TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),

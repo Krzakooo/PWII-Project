@@ -56,7 +56,7 @@
         }
 
         /* Form styles */
-        form {
+        form.form {
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -92,10 +92,65 @@
         button[type="submit"]:hover {
             background-color: #45a049;
         }
+
+        .logo {
+            font-size: 22px !important;
+        }
+        
+        
+        form.menuit {
+            margin-bottom: 20px;
+        }
+
+        button[type="submit"] {
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+            transition: color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        a.menuit {
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+            background-color: #4CAF50;
+            color: white !important;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        a.menuit:hover,
+        a.menuit:focus {
+            text-decoration: underline;
+            background-color: #45a049;
+        }
+
+        a:visited {
+            color: #555;
+        }
+        ul {
+            list-style-type: none;
+        }
     </style>
 </head>
 <body>
 <div class="centered-container">
+{% include 'menu.twig' %}
     <div class="forum-details" data-forum-id="{{ forum.forumId }}">
         <h1>{{ forum.forumName | upper }}</h1>
         <p>{{ forum.forumDescription }}</p>
@@ -118,7 +173,7 @@
 
     <div>
         <h2>Create New Post</h2>
-        <form id="create-post-form" method="post" action="/forums/{{ forum.forumId }}/posts">
+        <form class="form" id="create-post-form" method="post" action="/forums/{{ forum.forumId }}/posts">
             <input type="hidden" id="forumId" name="forumId" value="{{ forum.forumId }}">
             <input type="hidden" id="userId" name="userId" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
             <label for="content">Contents:</label><br>

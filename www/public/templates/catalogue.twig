@@ -176,15 +176,70 @@
             background-color: #d32f2f;
         }
 
+        .logo {
+            font-size: 22px !important;
+        }
+        
+        
+        form.menuit {
+            margin-bottom: 20px;
+        }
+
+        button[type="submit"] {
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+            transition: color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        a.menuit {
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+            background-color: #4CAF50;
+            color: white !important;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        a.menuit:hover,
+        a.menuit:focus {
+            text-decoration: underline;
+            background-color: #45a049;
+        }
+
+        a:visited {
+            color: #555;
+        }
+        ul {
+            list-style-type: none;
+        }
+
     </style>
 </head>
 <body>
 <div class="centered-container">
+{% include 'menu.twig' %}
     <h1>Book Catalogue</h1>
     <!-- Create New Book button -->
     <button id="createBookBtn">Create New Book</button>
 
-    <form id="createBookForm">
+    <form class="form" id="createBookForm">
         <label for="titleInput">Title:</label>
         <input type="text" id="titleInput" name="title" required><br>
         <label for="authorInput">Author:</label>

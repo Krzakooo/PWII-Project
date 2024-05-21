@@ -86,10 +86,16 @@ class BookCatalogueController
         $books = $this->service->fetchBooks();
         $searchResults = $this->fetchBookSearchResults();
 
+        session_start();
+        
+        $isLoggedIn = isset($_SESSION['user_id']);
+
+
         // Render Twig template with data
         $htmlContent = $this->twig->render('catalogue.twig', [
             'books' => $books,
             'searchResults' => $searchResults,
+            'isLoggedIn' => $isLoggedIn,
         ]);
 
         // Create a new response object
@@ -138,10 +144,14 @@ class BookCatalogueController
         $bookId = $args['id'];
         $bookDetails = $this->service->getBookDetails($bookId);
         $searchResults = $this->fetchBookSearchResults();
+        session_start();
+        
+        $isLoggedIn = isset($_SESSION['user_id']);
 
         $response->getBody()->write($this->twig->render('book_details.twig', [
             'book' => $bookDetails,
-            'searchResults' => $searchResults
+            'searchResults' => $searchResults,
+            'isLoggedIn' => $isLoggedIn
         ]));
         $jsonResponse = new SlimResponse();
         $jsonResponse->getBody()->write(json_encode($response));

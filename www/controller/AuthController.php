@@ -29,8 +29,10 @@ class AuthController
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
+        
+        $isLoggedIn = isset($_SESSION['user_id']);
 
-        $content = $this->twig->render('signin.twig', []);
+        $content = $this->twig->render('signin.twig', ['isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -50,19 +52,22 @@ class AuthController
         }
 
         if (!empty($errors)) {
-            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
+            session_start();
+            $isLoggedIn = isset($_SESSION['user_id']);
+            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
 
         if ($this->authService->login($email, $password)) {
             $user = $this->authService->getUserByEmail($email);
-            session_start();
+            
             $_SESSION['user_id'] = $user->getId();
             return $response->withHeader('Location', '/')->withStatus(302);
         } else {
-            $errors[] = "The email address or password is incorrect.";
-            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data]);
+            session_start();
+            $isLoggedIn = isset($_SESSION['user_id']);
+            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -74,8 +79,8 @@ class AuthController
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
-
-        $content = $this->twig->render('signup.twig', []);
+        $isLoggedIn = isset($_SESSION['user_id']);
+        $content = $this->twig->render('signup.twig', ['isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -109,7 +114,9 @@ class AuthController
         }
 
         if (!empty($errors)) {
-            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data]);
+            session_start();
+            $isLoggedIn = isset($_SESSION['user_id']);
+            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -128,7 +135,9 @@ class AuthController
             return $response->withHeader('Location', '/profile')->withStatus(302);
         } else {
             $errors[] = "An account with this email address already exists.";
-            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data]);
+            session_start();
+            $isLoggedIn = isset($_SESSION['user_id']);
+            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -157,9 +166,12 @@ class AuthController
         $user = $this->authService->getCurrentUser();
 
         if (!$user->getUsername()) {
+            session_start();
+            $isLoggedIn = isset($_SESSION['user_id']);
             $content = $this->twig->render('profile.twig', [
                 'currentUser' => $user,
-                'flashyMessages' => 'Update your username!'
+                'flashyMessages' => 'Update your username!',
+                'isLoggedIn' => $isLoggedIn
             ]);
             $response->getBody()->write($content);
             return $response;
@@ -167,7 +179,8 @@ class AuthController
 
         $profilePictureUrl = $user->getProfilePicture();
 
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'profilePictureUrl' => $profilePictureUrl]);
+        $isLoggedIn = isset($_SESSION['user_id']);
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'profilePictureUrl' => $profilePictureUrl, 'isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -228,8 +241,9 @@ class AuthController
 
         $user = $this->authService->getCurrentUser();
         $profilePictureUrl = $user->getProfilePicture();
+        $isLoggedIn = isset($_SESSION['user_id']);
 
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true, 'profilePictureUrl' => $profilePictureUrl]);
+        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true, 'profilePictureUrl' => $profilePictureUrl, 'isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
