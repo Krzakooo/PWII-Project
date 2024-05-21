@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Catalogue</title>
     <style>
-        /* Reset default browser styles */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        /* Body styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -21,26 +19,22 @@
             padding: 20px;
         }
 
-        /* Centered container */
         .centered-container {
-            max-width: 1200px; /* Increased width to accommodate multiple lists */
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Header styles */
         h1 {
             margin-bottom: 20px;
             text-align: center;
         }
 
-        /* Categories container */
         .categories {
             display: flex;
             flex-wrap: nowrap;
             overflow-x: auto;
         }
 
-        /* Category styles */
         .category {
             flex: 0 0 auto;
             width: 300px;
@@ -65,7 +59,6 @@
             margin-bottom: 10px;
         }
 
-        /* Button styles */
         .pagination {
             display: flex;
             justify-content: center;
@@ -86,7 +79,6 @@
             background-color: #45a049;
         }
 
-        /* Create Book button */
         #createBookBtn {
             display: block;
             background-color: #4CAF50;
@@ -103,7 +95,6 @@
             background-color: #45a049;
         }
 
-        /* Create Book form styles */
         #createBookForm {
             display: none;
             position: fixed;
@@ -114,8 +105,8 @@
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            z-index: 1000; /* Ensure the form is on top of other elements */
-            width: 80%; /* Adjust the width of the form */
+            z-index: 1000;
+            width: 80%;
         }
 
         #createBookForm label {
@@ -127,7 +118,7 @@
         #createBookForm input[type="text"],
         #createBookForm input[type="number"],
         #createBookForm textarea {
-            width: calc(100% - 22px); /* Adjust the width of the input fields */
+            width: calc(100% - 22px);
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -147,22 +138,7 @@
         #createBookForm button[type="submit"]:hover {
             background-color: #45a049;
         }
-        #createBookBtn {
-             background-color: #4CAF50;
-             color: white;
-             padding: 10px 20px;
-             border: none;
-             border-radius: 5px;
-             cursor: pointer;
-             margin-bottom: 20px;
-             text-align: center;
-         }
 
-        #createBookBtn:hover {
-            background-color: #45a049;
-        }
-
-        /* Styles for Cancel button */
         .cancel-btn {
             background-color: #f44336;
             color: white;
@@ -179,8 +155,7 @@
         .logo {
             font-size: 22px !important;
         }
-        
-        
+
         form.menuit {
             margin-bottom: 20px;
         }
@@ -226,20 +201,19 @@
         a:visited {
             color: #555;
         }
+
         ul {
             list-style-type: none;
         }
-
     </style>
 </head>
 <body>
 <div class="centered-container">
-{% include 'menu.twig' %}
+    {% include 'menu.twig' %}
     <h1>Book Catalogue</h1>
-    <!-- Create New Book button -->
     <button id="createBookBtn">Create New Book</button>
 
-    <form class="form" id="createBookForm">
+    <form id="createBookForm">
         <label for="titleInput">Title:</label>
         <input type="text" id="titleInput" name="title" required><br>
         <label for="authorInput">Author:</label>
@@ -258,16 +232,7 @@
         {% for category, books in searchResults %}
             <div class="category" data-category="{{ category }}">
                 <h2>{{ category|capitalize }}</h2>
-                <ul class="books">
-                    {% for book in books %}
-                        <li class="book-item" data-book-id="{{ book.id }}">
-                            <div class="book-details">
-                                <h3>{{ book.title }}</h3>
-                                <p>Authors: {{ book.author_names|join(', ') }}</p>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <ul class="books"></ul>
                 <div class="pagination">
                     <button class="prev" data-category="{{ category }}">Back</button>
                     <button class="next" data-category="{{ category }}">Next</button>
@@ -275,27 +240,25 @@
             </div>
         {% endfor %}
     </div>
-
-
 </div>
 
 <script>
     const createBookBtn = document.getElementById('createBookBtn');
     const createBookForm = document.getElementById('createBookForm');
-    createBookBtn.addEventListener('click', function() {
+    createBookBtn.addEventListener('click', () => {
         createBookForm.style.display = 'block';
     });
     const cancelBtn = document.getElementById('cancelBtn');
-    cancelBtn.addEventListener('click', function() {
+    cancelBtn.addEventListener('click', () => {
         createBookForm.reset();
         createBookForm.style.display = 'none';
     });
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', (event) => {
         if (event.target === createBookForm) {
             createBookForm.style.display = 'none';
         }
     });
-    createBookForm.addEventListener('click', function(event) {
+    createBookForm.addEventListener('click', (event) => {
         event.stopPropagation();
     });
     createBookForm.addEventListener('submit', function(event) {
@@ -318,14 +281,14 @@
             .catch(error => console.error('Error:', error));
     });
 
-    const booksData = JSON.parse('{{ searchResults|json_encode()|e }}');
+    const booksData = JSON.parse('{{ searchResults|json_encode()|e('js') }}');
 
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.category').forEach(categoryDiv => {
             const category = categoryDiv.dataset.category;
             const books = booksData[category];
             let currentPage = 1;
-            const booksPerPage = 5;  // Changed to 5 books per page
+            const booksPerPage = 5;
 
             const displayBooks = (page) => {
                 const startIndex = (page - 1) * booksPerPage;
@@ -336,7 +299,9 @@
                 for (let i = startIndex; i < endIndex; i++) {
                     const book = books[i];
                     const li = document.createElement("li");
-                    li.innerHTML = `<h3>${book.title}</h3><p>${book.author_names.join(', ')}</p>`;
+                    li.classList.add("book-item");
+                    li.dataset.bookId = book.id;
+                    li.innerHTML = `<div class="book-details"><h3>${book.title}</h3><p>Authors: ${book.author_names.join(', ')}</p></div>`;
                     booksList.appendChild(li);
                 }
             };
@@ -367,7 +332,6 @@
         });
     });
 
-    //Get functions not working
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.categories').addEventListener('click', (event) => {
             const clickedElement = event.target.closest('.book-item');
@@ -382,10 +346,6 @@
             }
         });
     });
-
-
-
-
 </script>
 </body>
 </html>

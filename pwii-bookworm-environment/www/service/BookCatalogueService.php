@@ -19,6 +19,21 @@ class BookCatalogueService
         $this->db = $db;
     }
 
+    public function getBookId($title, $author)
+    {
+        // Query the database to find the book by title and authors
+        $query = "SELECT id FROM books WHERE title = :title AND author = :author LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':author', $author);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? $result['id'] : null;
+    }
+
+
     public function saveBook(string $title, string $author, string $description, int $pages, string $cover): ?int
     {
         $sql = "INSERT INTO books (title, author, description, pages, cover) VALUES (:title, :author, :description, :pages, :cover)";

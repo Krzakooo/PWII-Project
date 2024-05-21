@@ -32,12 +32,11 @@ class BookCatalogueController
 
             $json = file_get_contents($url);
 
-            // Decode JSON data
             $data = json_decode($json, true);
 
-            if (isset($data['numFound']) && $data['numFound'] > 0) {
-                $searchResults = [];
+            $searchResults = [];
 
+            if (isset($data['numFound']) && $data['numFound'] > 0) {
                 foreach ($data['docs'] as $doc) {
                     $book = [
                         'title' => $doc['title'],
@@ -45,8 +44,10 @@ class BookCatalogueController
                     ];
 
                     // Check if the book already exists in the database
-                    if (!$this->service->bookExists($book['title'], implode(', ', $book['author_names']))) {
-                        // Save book to the database
+                    $bookId = $this->service->getBookId($book['title'], implode(', ', $book['author_names']));
+
+                    if (!$bookId) {
+                        // Save the book if it doesn't exist
                         $bookId = $this->service->saveBook(
                             $book['title'],
                             implode(', ', $book['author_names']),
@@ -54,27 +55,19 @@ class BookCatalogueController
                             0,
                             ''
                         );
-
-                        // If book is saved successfully, add it to search results
-                        if ($bookId !== null) {
-                            $searchResults[] = [
-                                'id' => $bookId,
-                                'title' => $book['title'],
-                                'author_names' => $book['author_names']
-                            ];
-                        }
                     }
 
-                    // Limit to 5 books per category
-                    if (count($searchResults) >= 5) {
-                        break;
-                    }
+                    // Add book to search results
+                    $searchResults[] = [
+                        'id' => $bookId,
+                        'title' => $book['title'],
+                        'author_names' => $book['author_names']
+                    ];
+
                 }
-
-                $allSearchResults[$category] = $searchResults;
-            } else {
-                $allSearchResults[$category] = [];
             }
+
+            $allSearchResults[$category] = $searchResults;
         }
 
         return $allSearchResults;
@@ -87,7 +80,7 @@ class BookCatalogueController
         $searchResults = $this->fetchBookSearchResults();
 
         session_start();
-        
+
         $isLoggedIn = isset($_SESSION['user_id']);
 
 
@@ -145,7 +138,7 @@ class BookCatalogueController
         $bookDetails = $this->service->getBookDetails($bookId);
         $searchResults = $this->fetchBookSearchResults();
         session_start();
-        
+
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $response->getBody()->write($this->twig->render('book_details.twig', [
