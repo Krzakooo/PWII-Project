@@ -25,7 +25,6 @@ class Book
     public function getId()
     {
         return $this->id;
-
     }
 
     public function setId($id)
