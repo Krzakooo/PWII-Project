@@ -15,7 +15,6 @@ class BookCatalogueService
 
     public function getBookId($title, $author)
     {
-        // Query the database to find the book by title and authors
         $query = "SELECT id FROM books WHERE title = :title AND author = :author LIMIT 1";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':title', $title);
@@ -55,13 +54,6 @@ class BookCatalogueService
         }
     }
 
-    public function fetchBooks(): ?array
-    {
-        $stmt = $this->db->query("SELECT * FROM books");
-        $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $books ?: null;
-    }
-
     public function addBookToCatalogue(array $data): bool
     {
         if (isset($data['title'], $data['author'], $data['description'], $data['pages'])) {
@@ -86,29 +78,6 @@ class BookCatalogueService
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function saveRating($bookId, $rating): void
-    {
-        $stmt = $this->db->prepare("INSERT INTO ratings (book_id, rating) VALUES (:book_id, :rating) ON DUPLICATE KEY UPDATE rating = :rating");
-        $stmt->execute([
-            'book_id' => $bookId,
-            'rating' => $rating,
-        ]);
-    }
-
-    public function deleteRating($bookId): void
-    {
-        $stmt = $this->db->prepare("DELETE FROM ratings WHERE book_id = :book_id");
-        $stmt->execute(['book_id' => $bookId]);
-    }
-
-    public function saveReview($bookId, $review): void
-    {
-        $stmt = $this->db->prepare("INSERT INTO reviews (book_id, review) VALUES (:book_id, :review) ON DUPLICATE KEY UPDATE review = :review");
-        $stmt->execute([
-            'book_id' => $bookId,
-            'review' => $review,
-        ]);
-    }
 
     public function updateBookDetails($bookId, $title, $author, $description, $pages, $cover)
     {
@@ -125,16 +94,6 @@ class BookCatalogueService
 
         return $success;
     }
-
-
-    public function deleteReview($bookId): void
-    {
-        $stmt = $this->db->prepare("DELETE FROM reviews WHERE book_id = :book_id");
-        $stmt->execute(['book_id' => $bookId]);
-    }
-
-
-
 
 
 }

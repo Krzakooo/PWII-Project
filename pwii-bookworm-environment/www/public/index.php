@@ -18,10 +18,12 @@ use Bookworm\controller\AuthController;
 use Bookworm\controller\ForumController;
 use Bookworm\controller\ForumPostController;
 use Bookworm\controller\BookCatalogueController;
+use Bookworm\controller\BookRatingReviewController;
 use Bookworm\controller\HomeController;
 use Bookworm\service\ForumPostService;
 use Bookworm\service\BookCatalogueService;
 use Bookworm\service\ForumService;
+use Bookworm\service\BookRatingReviewService;
 use Slim\Factory\AppFactory;
 use Bookworm\service\AuthService;
 use Bookworm\service\TwigRenderer;
@@ -43,12 +45,14 @@ $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
 $forumPostService = new ForumPostService($pdo);
 $bookCatalogueService = new BookCatalogueService($pdo);
+$bookRatingReviewService = new BookRatingReviewService($pdo);
 
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 $bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
+$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 
 $app->get('/', [$homeController, 'index']);
@@ -73,13 +77,15 @@ $app->get('/forums/{forumId}/posts', [$forumPostController, 'renderForumPostsPag
 $app->get('/api/forums/{forumId}/posts', [$forumPostController, 'renderForumPostsPage']);
 $app->post('/api/forums/{forumId}/posts', [$forumPostController, 'createForumPost']);
 
-
+// Book catalogue
 $app->get('/catalogue', [$bookCatalogueController, 'showAddBookForm']);
 $app->post('/catalogue', [$bookCatalogueController , 'addBookToCatalogue']);
 $app->get('/catalogue/{id}', [$bookCatalogueController, 'getBookDetails']);
-$app->put('/catalogue/{id}/rate', [$bookCatalogueController, 'rateBook']);
-$app->delete('/catalogue/{id}/rate', [$bookCatalogueController, 'deleteRating']);
-$app->put('/catalogue/{id}/review', [$bookCatalogueController, 'reviewBook']);
-$app->delete('/catalogue/{id}/review', [$bookCatalogueController, 'deleteReview']);
+
+// Rating & Review
+$app->put('/catalogue/{id}/rate', [$bookRatingReviewController, 'rateBook']);
+$app->delete('/catalogue/{id}/rate', [$bookRatingReviewController, 'deleteRating']);
+$app->put('/catalogue/{id}/review', [$bookRatingReviewController, 'reviewBook']);
+$app->delete('/catalogue/{id}/review', [$bookRatingReviewController, 'deleteReview']);
 
 $app->run();

@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use Bookworm\controller\BookRatingReviewController;
 use Bookworm\controller\ForumController;
 use Bookworm\controller\ForumPostController;
+use Bookworm\service\BookRatingReviewService;
 use Bookworm\service\ForumPostService;
 use Bookworm\service\BookCatalogueService;
 use Bookworm\service\ForumService;
@@ -20,9 +22,11 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once '../controller/AuthController.php';
 require_once '../controller/HomeController.php';
 require_once '../controller/BookCatalogueController.php';
+require_once '../controller/BookRatingReviewController.php';
 require_once '../service/AuthService.php';
 require_once '../service/TwigRenderer.php';
 require_once '../service/BookCatalogueService.php';
+require_once '../service/BookRatingReviewService.php';
 require_once '../config/dependencies.php';
 require_once '../service/ForumService.php';
 require_once '../service/ForumPostService.php';
@@ -44,6 +48,7 @@ $authService = new AuthService($pdo);
 $forumService = new ForumService($pdo);
 $forumPostService = new ForumPostService($pdo);
 $bookCatalogueService = new BookCatalogueService($pdo);
+$bookRatingReviewService= new BookRatingReviewService($pdo);
 
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
@@ -51,6 +56,7 @@ $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
+$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -129,12 +135,13 @@ $app->get('/catalogue/{id}', function (Request $request, Response $response, $ar
     return $bookCatalogueController->getBookDetails($request, $response, $args);
 });
 
-$app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->reviewBook($request, $response, $args);
+// Review & Rating
+$app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->reviewBook($request, $response, $args);
 });
 
-$app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookCatalogueController) {
-    return $bookCatalogueController->deleteReview($request, $response, $args);
+$app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->deleteReview($request, $response, $args);
 });
 
 
