@@ -22,16 +22,12 @@ class BookCatalogueController
 
     public function showAddBookForm(Request $request, Response $response): Response
     {
-        // Fetch books from both API and database
-        $searchResults = $this->fetchBookSearchResults();
-        $databaseBooks = $this->service->fetchBooks();
 
-        // Combine search results with database books
-        $allBooks = array_merge_recursive($searchResults, $databaseBooks);
+        $searchResults = $this->fetchBookSearchResults();
 
         // Render Twig template with data
         $htmlContent = $this->twig->render('catalogue.twig', [
-            'searchResults' => $allBooks
+            'searchResults' => $searchResults
         ]);
 
         // Create a new response object
@@ -53,10 +49,7 @@ class BookCatalogueController
         $allSearchResults = [];
         $allKeys = [];
         $maxBooksPerCategory = 20;
-        $totalMaxBooks = 150;
 
-        // Retrieve the current number of books in the database
-        $currentBookCount = $this->service->getTotalBookCount();
 
         foreach ($categories as $category) {
             $category_url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name,cover_i,key,editions";
@@ -70,10 +63,6 @@ class BookCatalogueController
                 foreach ($data['docs'] as $doc) {
                     if (count($searchResults) >= $maxBooksPerCategory) {
                         break; // Break the loop if maximum books per category is reached
-                    }
-
-                    if ($currentBookCount >= $totalMaxBooks) {
-                        break 2;
                     }
 
                     $key_book = null;
@@ -121,8 +110,6 @@ class BookCatalogueController
                             $cover_url
                         );
 
-                        // Increment the current book count
-                        $currentBookCount++;
                     }
                     // Add book details to searchResults
                     $searchResults[] = [
