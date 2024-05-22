@@ -329,12 +329,15 @@
                     li.classList.add("book-item");
                     li.dataset.bookId = book.id;
                     li.innerHTML = `
-            <div class="book-details">
-                <h3>${book.title}</h3>
-                <p>Authors: ${book.author_names.join(', ')}</p>
-                <img src="${book.cover_url}" alt="Cover Image">
+        <div class="book-details">
+            <h3>${book.title}</h3>
+            <p>Authors: ${book.author_names.join(', ')}</p>
+            <img src="${book.cover_url}" alt="Cover Image">
+            <div class="rating">
+                Rating: ${book.rating}/5 (${book.num_reviews} reviews)
             </div>
-        `;
+        </div>
+    `;
                     booksList.appendChild(li);
                 }
             };

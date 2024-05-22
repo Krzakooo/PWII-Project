@@ -7,10 +7,12 @@ require_once '../controller/HomeController.php';
 require_once '../controller/ForumController.php';
 require_once '../controller/ForumPostController.php';
 require_once '../controller/BookCatalogueController.php';
+require_once '../controller/BookRatingReviewController.php';
 require_once '../service/AuthService.php';
 require_once '../service/TwigRenderer.php';
 require_once '../service/ForumService.php';
 require_once '../service/BookCatalogueService.php';
+require_once '../service/BookRatingReviewService.php';
 require_once '../service/ForumPostService.php';
 require_once '../config/dependencies.php';
 
@@ -51,7 +53,7 @@ $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $bookRatingReviewService);
 $bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 

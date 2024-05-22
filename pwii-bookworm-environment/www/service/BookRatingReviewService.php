@@ -42,4 +42,21 @@ class BookRatingReviewService
         $stmt = $this->db->prepare("DELETE FROM ratings WHERE book_id = :book_id");
         $stmt->execute(['book_id' => $bookId]);
     }
+
+    public function getReviewByBookId($bookId): ?string
+    {
+        $stmt = $this->db->prepare("SELECT review FROM reviews WHERE book_id = :book_id");
+        $stmt->execute(['book_id' => $bookId]);
+        $review = $stmt->fetchColumn();
+        return $review !== false ? $review : null;
+    }
+
+    public function getRatingByBookId($bookId): ?int
+    {
+        $stmt = $this->db->prepare("SELECT rating FROM ratings WHERE book_id = :book_id");
+        $stmt->execute(['book_id' => $bookId]);
+        $rating = $stmt->fetchColumn();
+        return $rating !== false ? (int)$rating : null;
+    }
+
 }

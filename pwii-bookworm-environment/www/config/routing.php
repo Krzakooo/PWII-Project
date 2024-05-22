@@ -54,7 +54,7 @@ $bookRatingReviewService= new BookRatingReviewService($pdo);
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $bookRatingReviewService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 $bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 

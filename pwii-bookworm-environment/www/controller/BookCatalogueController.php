@@ -2,6 +2,7 @@
 
 namespace Bookworm\controller;
 
+use Bookworm\service\BookRatingReviewService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
@@ -13,11 +14,14 @@ class BookCatalogueController
 {
     private $twig;
     private $service;
+    private $bookRatingReviewService;
 
-    public function __construct(TwigRenderer $twig, BookCatalogueService $service)
+    public function __construct(TwigRenderer            $twig, BookCatalogueService $service,
+                                BookRatingReviewService $bookRatingReviewService)
     {
         $this->twig = $twig;
         $this->service = $service;
+        $this->bookRatingReviewService = $bookRatingReviewService;
     }
 
     public function showAddBookForm(Request $request, Response $response): Response
@@ -44,6 +48,7 @@ class BookCatalogueController
     {
 
         // Hardcoded search strings for different categories
+        global $bookRatingReviewService;
         $categories = ['action', 'adventure', 'mystery', 'fantasy', 'romance', 'science', 'history', 'biography', 'horror', 'comedy'];
 
         $allSearchResults = [];
@@ -56,6 +61,7 @@ class BookCatalogueController
 
             $json = file_get_contents($category_url);
             $data = json_decode($json, true);
+
 
             $searchResults = [];
 
@@ -111,15 +117,14 @@ class BookCatalogueController
                         );
 
                     }
-                    // Add book details to searchResults
+
                     $searchResults[] = [
                         'id' => $bookId,
                         'title' => $book['title'],
                         'author_names' => $book['author_names'],
                         'cover_url' => $cover_url,
                         'description' => $description ?? '',
-                        'pages' => $pages ?? 0,
-
+                        'pages' => $pages ?? 0
                     ];
                 }
             }
