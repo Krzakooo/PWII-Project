@@ -124,17 +124,7 @@
         <h1>Book Not Found</h1>
     {% endif %}
 
-    <div class="search-results">
-        <h2>Search Results</h2>
-        {% for category, books in searchResults %}
-            <div class="category">{{ category }}</div>
-            {% for book in books %}
-                <div>
-                    <strong>{{ book.title }}</strong> by {{ book.author_names|join(', ') }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </div>
+
 </div>
 </body>
 </html>

@@ -8,12 +8,6 @@ class BookCatalogueService
 {
     private $db;
 
-    //For the API
-    const OPENLIBRARY_ISBN_URL = 'https://openlibrary.org/isbn/';
-    const OPENLIBRARY_WORKS_URL = 'https://openlibrary.org/works/';
-    const OPENLIBRARY_AUTHORS_URL = 'https://openlibrary.org/authors/';
-    const OPENLIBRARY_COVER_URL = 'https://covers.openlibrary.org/b/id/';
-
     public function __construct(PDO $db)
     {
         $this->db = $db;
@@ -31,6 +25,14 @@ class BookCatalogueService
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $result ? $result['id'] : null;
+    }
+
+    public function getTotalBookCount()
+    {
+        $query = "SELECT COUNT(*) as total FROM books";
+        $result = $this->db->query($query);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        return (int)$row['total'];
     }
 
 
@@ -131,16 +133,7 @@ class BookCatalogueService
         $stmt->execute(['book_id' => $bookId]);
     }
 
-    public function bookExists(string $title, string $author): bool
-    {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM books WHERE title = :title AND author = :author");
-        $stmt->execute([
-            'title' => $title,
-            'author' => $author
-        ]);
-        $count = $stmt->fetchColumn();
-        return $count > 0;
-    }
+
 
 
 
