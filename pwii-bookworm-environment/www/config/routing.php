@@ -143,6 +143,13 @@ $app->put('/catalogue/{id}/review', function (Request $request, Response $respon
 $app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
     return $bookRatingReviewController->deleteReview($request, $response, $args);
 });
+$app->put('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->rateBook($request, $response, $args);
+});
+
+$app->delete('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->deleteRating($request, $response, $args);
+});
 
 
 $app->run();

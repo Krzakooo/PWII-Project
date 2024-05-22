@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Book</title>
+
+</head>
+<body>
+<div class="container">
+    <h1>Rate This Book</h1>
+    <form action="/catalogue/{{ book.id }}/rate" method="POST">
+        <label for="rating">Rate this book:</label>
+        <select name="rating" id="rating">
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+        </select>
+        <button type="submit">Submit Rating</button>
+    </form>
+</div>
+</body>
+</html>
