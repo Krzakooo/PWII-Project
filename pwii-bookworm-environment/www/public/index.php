@@ -53,12 +53,13 @@ $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $bookRatingReviewService);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController);
 $bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 
 $app->get('/', [$homeController, 'index']);
 
+$app->get('/get-user/{id}', [$authController, 'getUserById']);
 $app->get('/sign-up', [$authController, 'showSignUpForm']);
 $app->post('/sign-up', [$authController, 'signUp']);
 $app->get('/sign-in', [$authController, 'showSignInForm']);
@@ -85,6 +86,10 @@ $app->post('/catalogue', [$bookCatalogueController , 'addBookToCatalogue']);
 $app->get('/catalogue/{id}', [$bookCatalogueController, 'getBookDetails']);
 
 // Rating & Review
+$app->get('/catalogue/{id}/ratings', [$bookRatingReviewController, 'getRatings']);
+$app->post('/catalogue/{id}/rate', [$bookRatingReviewController, 'createRating']);
+$app->get('/catalogue/{id}/reviews', [$bookRatingReviewController, 'getReviews']);
+$app->post('/catalogue/{id}/review', [$bookRatingReviewController, 'createReview']);
 $app->put('/catalogue/{id}/rate', [$bookRatingReviewController, 'rateBook']);
 $app->delete('/catalogue/{id}/rate', [$bookRatingReviewController, 'deleteRating']);
 $app->put('/catalogue/{id}/review', [$bookRatingReviewController, 'reviewBook']);

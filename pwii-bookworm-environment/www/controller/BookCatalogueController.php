@@ -2,7 +2,7 @@
 
 namespace Bookworm\controller;
 
-use Bookworm\service\BookRatingReviewService;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
@@ -14,14 +14,13 @@ class BookCatalogueController
 {
     private $twig;
     private $service;
-    private $bookRatingReviewService;
+    private $authController;
 
-    public function __construct(TwigRenderer            $twig, BookCatalogueService $service,
-                                BookRatingReviewService $bookRatingReviewService)
+    public function __construct(TwigRenderer $twig, BookCatalogueService $service, AuthController $authController)
     {
         $this->twig = $twig;
         $this->service = $service;
-        $this->bookRatingReviewService = $bookRatingReviewService;
+        $this->authController = $authController;
     }
 
     public function showAddBookForm(Request $request, Response $response): Response
@@ -31,7 +30,7 @@ class BookCatalogueController
 
         // Render Twig template with data
         $htmlContent = $this->twig->render('catalogue.twig', [
-            'searchResults' => $searchResults
+            'searchResults' => $searchResults,
         ]);
 
         // Create a new response object
@@ -48,20 +47,17 @@ class BookCatalogueController
     {
 
         // Hardcoded search strings for different categories
-        global $bookRatingReviewService;
         $categories = ['action', 'adventure', 'mystery', 'fantasy', 'romance', 'science', 'history', 'biography', 'horror', 'comedy'];
 
         $allSearchResults = [];
         $allKeys = [];
         $maxBooksPerCategory = 20;
 
-
         foreach ($categories as $category) {
             $category_url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name,cover_i,key,editions";
 
             $json = file_get_contents($category_url);
             $data = json_decode($json, true);
-
 
             $searchResults = [];
 
@@ -124,12 +120,13 @@ class BookCatalogueController
                         'author_names' => $book['author_names'],
                         'cover_url' => $cover_url,
                         'description' => $description ?? '',
-                        'pages' => $pages ?? 0
+                        'pages' => $pages ?? 0,
                     ];
+
+                    $allSearchResults[$category] = $searchResults;
+
                 }
             }
-
-            $allSearchResults[$category] = $searchResults;
         }
 
         return $allSearchResults;

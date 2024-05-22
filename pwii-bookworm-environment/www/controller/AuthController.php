@@ -1,16 +1,17 @@
 <?php
 
+
 namespace Bookworm\controller;
 
 require_once '../model/User.php';
 
+use Bookworm\model\User;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Bookworm\service\TwigRenderer;
 use Bookworm\service\AuthService;
 use Psr\Http\Message\UploadedFileInterface;
 use Exception;
-use Slim\Psr7\Response as SlimResponse;
 
 class AuthController
 {
@@ -23,6 +24,13 @@ class AuthController
         $this->authService = $authService;
     }
 
+    public function getUserIdFromSession(): ?int
+    {
+        session_start();
+        return $_SESSION['user_id'] ?? null;
+    }
+
+
     public function showSignInForm(Request $request, Response $response): Response
     {
         session_start();
@@ -32,7 +40,7 @@ class AuthController
 
         $isLoggedIn = isset($_SESSION['user_id']);
 
-        $content = $this->twig->render('signin.twig', ['isLoggedIn' => $isLoggedIn]);
+        $content = $this->twig->render('signIn.twig', ['isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -54,7 +62,7 @@ class AuthController
         if (!empty($errors)) {
             session_start();
             $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
+            $content = $this->twig->render('signIn.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -67,7 +75,7 @@ class AuthController
         } else {
             session_start();
             $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signin.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
+            $content = $this->twig->render('signIn.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -80,7 +88,7 @@ class AuthController
             return $response->withHeader('Location', '/')->withStatus(302);
         }
         $isLoggedIn = isset($_SESSION['user_id']);
-        $content = $this->twig->render('signup.twig', ['isLoggedIn' => $isLoggedIn]);
+        $content = $this->twig->render('signIn.twig', ['isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -127,11 +135,8 @@ class AuthController
         if ($user) {
             session_start();
             $_SESSION['user_id'] = $user->getId();
-
-            // Set flash message
             $_SESSION['flash_message'] = "You are now signed up, welcome to your site";
 
-            // Redirect to profile page
             return $response->withHeader('Location', '/profile')->withStatus(302);
         } else {
             $errors[] = "An account with this email address already exists.";
@@ -156,31 +161,37 @@ class AuthController
         }
     }
 
-    public function showProfile(Request $request, Response $response): Response
+    public function getUserById(int $id): ?User
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
+        $user = $this->authService->getUserById($id);
+
+        if ($user && $this->authService->isLoggedIn()) {
+            return $user;
+        } else {
+            return null;
+        }
+    }
+
+    public function showProfile(Request $request, Response $response): Response
+    {
+        $userId = $this->getUserIdFromSession();
+
+        if (!$userId) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
 
-        $user = $this->authService->getCurrentUser();
-
-        if (!$user->getUsername()) {
-            session_start();
-            $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('profile.twig', [
-                'currentUser' => $user,
-                'flashyMessages' => 'Update your username!',
-                'isLoggedIn' => $isLoggedIn
-            ]);
-            $response->getBody()->write($content);
-            return $response;
-        }
+        $user = $this->authService->getUserById($userId);
 
         $profilePictureUrl = $user->getProfilePicture();
-
         $isLoggedIn = isset($_SESSION['user_id']);
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'profilePictureUrl' => $profilePictureUrl, 'isLoggedIn' => $isLoggedIn]);
+
+        $content = $this->twig->render('profile.twig', [
+            'currentUser' => $user,
+            'profilePictureUrl' => $profilePictureUrl,
+            'isLoggedIn' => $isLoggedIn,
+            'userId' => $userId
+        ]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -193,11 +204,12 @@ class AuthController
         }
 
         $user = $this->authService->getCurrentUser();
-
         $data = $request->getParsedBody();
         $email = $data['email'];
         $username = $data['username'];
         $errors = [];
+        $responseData = [];
+
         if (!empty($email) && $email !== $user->getEmail()) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = "The email address is not valid.";
@@ -205,7 +217,9 @@ class AuthController
                 $errors[] = "The email address is already registered.";
             } else {
                 $success = $this->authService->updateEmail($user->getId(), $email);
-                if (!$success) {
+                if ($success) {
+                    $responseData['email'] = $email;
+                } else {
                     $errors[] = "Failed to update email. Please try again later.";
                 }
             }
@@ -217,7 +231,9 @@ class AuthController
                 $errors[] = "The username is already taken.";
             } else {
                 $success = $this->authService->updateUsername($user->getId(), $username);
-                if (!$success) {
+                if ($success) {
+                    $responseData['username'] = $username;
+                } else {
                     $errors[] = "Failed to update username. Please try again later.";
                 }
             }
@@ -231,22 +247,26 @@ class AuthController
             $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
             if ($fileName) {
                 $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
-                if (!$success) {
+                if ($success) {
+                    $responseData['profilePictureUrl'] = '/uploads/' . $fileName;
+                } else {
                     $errors[] = "Failed to update profile picture. Please try again later.";
                 }
             } else {
-                $errors[] = $fileName;
+                $errors[] = "Failed to upload profile picture. Please try again.";
             }
         }
 
-        $user = $this->authService->getCurrentUser();
-        $profilePictureUrl = $user->getProfilePicture();
-        $isLoggedIn = isset($_SESSION['user_id']);
+        if (!empty($errors)) {
+            $responseData['errors'] = $errors;
+        } else {
+            $responseData['success'] = true;
+        }
 
-        $content = $this->twig->render('profile.twig', ['currentUser' => $user, 'errors' => $errors, 'post' => true, 'profilePictureUrl' => $profilePictureUrl, 'isLoggedIn' => $isLoggedIn]);
-        $response->getBody()->write($content);
-        return $response;
+        $response->getBody()->write(json_encode($responseData));
+        return $response->withHeader('Content-Type', 'application/json');
     }
+
 
     private function uploadProfilePicture(UploadedFileInterface $file, string $uploadPath): ?string
     {
@@ -255,27 +275,32 @@ class AuthController
         }
 
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-        $fileExtension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
-        if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+        $fileExtension = strtolower(pathinfo($file->getClientFilename(), PATHINFO_EXTENSION));
+        if (!in_array($fileExtension, $allowedExtensions)) {
             return null;
         }
 
-        $image = getimagesize($file->getStream()->getMetadata('uri'));
-        $width = $image[0];
-        $height = $image[1];
+        $imageSize = @getimagesize($file->getStream()->getMetadata('uri'));
+        if ($imageSize === false) {
+            return null;
+        }
+        list($width, $height) = $imageSize;
+
         if ($width > 400 || $height > 400) {
             return null;
         }
 
         $uuid = uniqid();
         $newFilename = "{$uuid}.{$fileExtension}";
+        $destinationPath = "$uploadPath/$newFilename";
 
         try {
-            $file->moveTo("$uploadPath/$newFilename");
+            $file->moveTo($destinationPath);
             return $newFilename;
         } catch (Exception $e) {
             return null;
         }
     }
+
 
 }

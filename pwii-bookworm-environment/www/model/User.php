@@ -10,13 +10,13 @@ class User
     private $username;
     private $profilePicture;
 
-    public function __construct(int $id = null, string $email = '', string $password = '', string $username = '', ?string $profilePicture = null)
+    public function __construct($id, $email, $password, $username, $profilePicture = '')
     {
         $this->id = $id;
         $this->email = $email;
         $this->password = $password;
         $this->username = $username;
-        $this->profilePicture = $profilePicture ?? ''; // Defaulting to an empty string if null
+        $this->profilePicture = $profilePicture ?? '' ;
     }
 
     public function getId(): int

@@ -54,13 +54,17 @@ $bookRatingReviewService= new BookRatingReviewService($pdo);
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $bookRatingReviewService);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 $bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
     return $homeController->index($request, $response);
+});
+
+$app->get('/get-user/{id}', function (Request $request, Response $response, $args) use ($authController) {
+    return $authController->getUserById($args['id']);
 });
 
 $app->get('/sign-up', function (Request $request, Response $response, $args) use ($authController) {
@@ -136,6 +140,22 @@ $app->get('/catalogue/{id}', function (Request $request, Response $response, $ar
 });
 
 // Review & Rating
+$app->get('/catalogue/{id}/ratings', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->getRatings($request, $response, $args);
+});
+
+$app->get('/catalogue/{id}/reviews', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->getReviews($request, $response, $args);
+});
+
+$app->post('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->createReview($request, $response, $args);
+});
+
+$app->post('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
+    return $bookRatingReviewController->createRating($request, $response, $args);
+});
+
 $app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
     return $bookRatingReviewController->reviewBook($request, $response, $args);
 });

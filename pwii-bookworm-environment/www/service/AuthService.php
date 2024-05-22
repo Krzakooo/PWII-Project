@@ -25,13 +25,11 @@ class AuthService
     {
         if ($this->isLoggedIn()) {
             $userId = $_SESSION['user_id'];
-            $user = $this->getUserById($userId);
-            return $user;
+            return $this->getUserById($userId);
         } else {
             return null;
         }
     }
-
 
     public function login(string $email, string $password): bool
     {

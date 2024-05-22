@@ -235,7 +235,7 @@
     </style>
 </head>
 <body>
-<div class="centered-container">
+<div class="centered-container" >
     {% include 'menu.twig' %}
     <h1>Book Catalogue</h1>
     <button id="createBookBtn">Create New Book</button>
@@ -333,9 +333,6 @@
             <h3>${book.title}</h3>
             <p>Authors: ${book.author_names.join(', ')}</p>
             <img src="${book.cover_url}" alt="Cover Image">
-            <div class="rating">
-                Rating: ${book.rating}/5 (${book.num_reviews} reviews)
-            </div>
         </div>
     `;
                     booksList.appendChild(li);
@@ -377,7 +374,6 @@
             }
         });
     });
-
-</script>
+  </script>
 </body>
 </html>

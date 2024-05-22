@@ -1,19 +1,41 @@
 <nav class="navbar">
     <ul class="menu-list">
-        <li><a class="logo menuit" href="/"><b>𝓑𝓞𝓞𝓚𝓦𝓞𝓡𝓜</b></a></li>
+        <li><a class="logo menuIt" href="/"><b>𝓑𝓞𝓞𝓚𝓦𝓞𝓡𝓜</b></a></li>
 
         {% if isLoggedIn %}
             <li>
-                <form class="menuit" action="/logout" method="post">
+                <form class="menuIt" action="/logout" method="post">
                     <button type="submit">Logout</button>
                 </form>
             </li>
-            <li><a class="menuit" href="/profile">Profile</a></li>
-            <li><a class="menuit" href="/catalogue">Book Catalogue</a></li>
-            <li><a class="menuit" href="/forums">Forums</a></li>
+            <li>
+                <form class="menuIt" action="/profile" method="get">
+                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <button type="submit">Profile</button>
+                </form>
+            </li>
+            <li>
+                <form class="menuIt" action="/catalogue" method="get">
+                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <button type="submit">Book Catalogue</button>
+                </form>
+            </li>
+            <li>
+                <form class="menuIt" action="/forums" method="get">
+                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <button type="submit">Forums</button>
+                </form>
+            </li>
         {% else %}
-            <li><a class="menuit" href="/sign-in">Sign In</a></li>
-            <li><a class="menuit" href="/sign-up">Sign Up</a></li>
+            <li><a class="menuIt" href="/sign-in">Sign In</a></li>
+            <li><a class="menuIt" href="/sign-up">Sign Up</a></li>
+            {% set user_id = 0 %}
         {% endif %}
     </ul>
 </nav>
+
+<script>
+
+    const userId = {{ user_id }};
+    console.log('Current user ID:', userId);
+</script>

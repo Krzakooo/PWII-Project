@@ -50,7 +50,7 @@
         .post-list li {
             background-color: #fff;
             border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-bottom: 10px;
         }
@@ -63,11 +63,10 @@
         form.form {
             background-color: #fff;
             border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-top: 20px;
         }
-
 
 
         label {
@@ -91,7 +90,6 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
-
 
 
         .logo {
@@ -144,19 +142,15 @@
         a:visited {
             color: #555;
         }
+
         ul {
             list-style-type: none;
         }
-
-
-
-
-
     </style>
 </head>
 <body>
-<div class="centered-container">
-    {% include 'menu.twig' %}
+{% include 'menu.twig' %} <!-- Menu inclusion here -->
+<div class="centered-container" id="user-id" data-user-id="{{ userId }}">
     <h1>User Profile</h1>
     {% if flashyMessages %}
         <h2 style="color: red;">{{ flashyMessages }}</h2>
@@ -175,13 +169,13 @@
     {% endif %}
 
     {% if profilePictureUrl %}
-        <img src="{{ profilePictureUrl }}" alt="Profile Picture">
+        <img id="profile-picture-display" src="{{ profilePictureUrl }}" alt="Profile Picture">
     {% else %}
-        <p>No profile picture available</p>
+        <p id="no-profile-picture">No profile picture available</p>
     {% endif %}
 
     {% if currentUser %}
-        <form class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
+        <form id="profile_form" class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email">
 
@@ -192,14 +186,74 @@
             <input type="file" id="profile_picture" name="profile_picture" accept="image/png, image/jpeg, image/gif, image/svg+xml" data-cy="profile__picture">
             <script>
                 document.getElementById('profile_picture').addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        document.getElementById('picture_label').innerText = "File uploaded successfully";
-                        document.getElementById('picture_label').style.color = "green";
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            let img = document.getElementById('profile-picture-display');
+                            if (!img) {
+                                img = document.createElement('img');
+                                img.id = 'profile-picture-display';
+                                document.getElementById('picture_label').after(img);
+                            }
+                            img.src = e.target.result;
+                            img.style.maxWidth = '200px';
+                            document.getElementById('picture_label').innerText = "File uploaded successfully";
+                            document.getElementById('picture_label').style.color = "green";
+                        };
+                        reader.readAsDataURL(file);
                     } else {
                         document.getElementById('picture_label').innerText = "Upload a Profile Picture";
+                        const img = document.getElementById('profile-picture-display');
+                        if (img) {
+                            img.remove();
+                            const noProfilePictureText = document.createElement('p');
+                            noProfilePictureText.id = 'no-profile-picture';
+                            noProfilePictureText.innerText = 'No profile picture available';
+                            document.getElementById('profile_form').insertBefore(noProfilePictureText, document.getElementById('profile_form').firstChild);
+                        }
                     }
                 });
+
+                document.getElementById('profile_form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    fetch('/profile', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                if (data.email) {
+                                    document.getElementById('email').value = data.email;
+                                }
+                                if (data.username) {
+                                    document.getElementById('username').value = data.username;
+                                }
+                                if (data.profilePictureUrl) {
+                                    let img = document.getElementById('profile-picture-display');
+                                    if (!img) {
+                                        img = document.createElement('img');
+                                        img.id = 'profile-picture-display';
+                                        document.getElementById('picture_label').after(img);
+                                    }
+                                    img.src = data.profilePictureUrl;
+                                    img.style.maxWidth = '200px';
+                                    document.getElementById('no-profile-picture')?.remove();
+                                }
+                                alert('Profile updated successfully!');
+                            } else {
+                                alert('Failed to update profile: ' + data.errors.join(', '));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while updating the profile. Please try again.');
+                        });
+                });
             </script>
+
             <input type="submit" value="Update Profile" data-cy="profile__btn">
         </form>
     {% else %}
@@ -207,6 +261,14 @@
     {% endif %}
 
     <a href="/forums" style="margin-top: 20px;">Go to Forums</a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const userId = document.getElementById('user-id').getAttribute('data-user-id');
+            console.log('Logged in user ID:', userId);
+        });
+    </script>
+
 </div>
 </body>
 </html>
