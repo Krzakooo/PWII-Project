@@ -365,21 +365,16 @@
         });
     });
 
-
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.categories').addEventListener('click', (event) => {
             const clickedElement = event.target.closest('.book-item');
             if (clickedElement) {
                 const bookId = clickedElement.dataset.bookId;
-                fetch(`/catalogue/${bookId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        window.location.href = `/catalogue?id=${bookId}`;
-                    })
-                    .catch(error => console.error('Error:', error));
+                window.location.href = `/catalogue/${bookId}`;
             }
         });
     });
+
 </script>
 </body>
 </html>

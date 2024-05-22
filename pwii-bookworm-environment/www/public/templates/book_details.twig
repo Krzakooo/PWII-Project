@@ -115,9 +115,16 @@
     {% if book %}
         <div class="book-details">
             <h1>{{ book.title }}</h1>
-            <div><strong>Author(s):</strong> {{ book.author_names|join(', ') }}</div>
+            <div><strong>Author(s):</strong> {{ book.author|join(', ') }}</div>
             <div><strong>Description:</strong> {{ book.description }}</div>
-            <div><strong>Number of Pages:</strong> {{ book.pages }}</div>
+            <div><strong>Number of Pages:</strong>
+                {% if book.pages > 0 %}
+                    {{ book.pages }}
+                {% else %}
+                    Not Specified
+                {% endif %}
+            </div>
+
             <div><strong>Cover:</strong> <img src="{{ book.cover }}" alt="{{ book.title }} cover"></div>
         </div>
     {% else %}

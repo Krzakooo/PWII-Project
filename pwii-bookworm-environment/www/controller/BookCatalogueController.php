@@ -189,29 +189,18 @@ class BookCatalogueController
 
     public function getBookDetails(Request $request, Response $response, $args): Response
     {
-        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
-
-        if (!$authenticated) {
-            return $response->withHeader('Location', '/sign-in')->withStatus(302);
-        }
-
         $bookId = $args['id'];
         $bookDetails = $this->service->getBookDetails($bookId);
-        $searchResults = $this->fetchBookSearchResults();
-        session_start();
 
-        $isLoggedIn = isset($_SESSION['user_id']);
-
-        $response->getBody()->write($this->twig->render('book_details.twig', [
+        $htmlContent = $this->twig->render('book_details.twig', [
             'book' => $bookDetails,
-            'searchResults' => $searchResults,
-            'isLoggedIn' => $isLoggedIn
-        ]));
-        $jsonResponse = new SlimResponse();
-        $jsonResponse->getBody()->write(json_encode($response));
-        $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
-        return $jsonResponse;
+        ]);
+
+        $htmlResponse = new SlimResponse();
+        $htmlResponse->getBody()->write($htmlContent);
+        return $htmlResponse->withHeader('Content-Type', 'text/html');
     }
+
 
 
     public function rateBook(Request $request, Response $response, $args): Response
