@@ -68,7 +68,6 @@
             margin-top: 20px;
         }
 
-
         label {
             display: block;
             margin-bottom: 10px;
@@ -91,11 +90,9 @@
             box-sizing: border-box;
         }
 
-
         .logo {
             font-size: 22px !important;
         }
-
 
         form.menuit {
             margin-bottom: 20px;
@@ -168,8 +165,8 @@
         {% endif %}
     {% endif %}
 
-    {% if profilePictureUrl %}
-        <img id="profile-picture-display" src="{{ profilePictureUrl }}" alt="Profile Picture">
+    {% if profilePicture %}
+        <img id="profile-picture-display" src="data:image/png;base64,{{ profilePicture }}" alt="Profile Picture" style="max-width: 200px;">
     {% else %}
         <p id="no-profile-picture">No profile picture available</p>
     {% endif %}
@@ -200,6 +197,7 @@
                             img.style.maxWidth = '200px';
                             document.getElementById('picture_label').innerText = "File uploaded successfully";
                             document.getElementById('picture_label').style.color = "green";
+                            document.getElementById('no-profile-picture')?.remove();
                         };
                         reader.readAsDataURL(file);
                     } else {
@@ -217,28 +215,62 @@
 
                 document.getElementById('profile_form').addEventListener('submit', function(e) {
                     e.preventDefault();
-                    const formData = new FormData(this);
+
+                    // Get input values
+                    const email = document.getElementById('email').value;
+                    const username = document.getElementById('username').value;
+                    const profilePictureInput = document.getElementById('profile_picture');
+                    let profilePicture = null;
+
+                    // Check if a profile picture is uploaded
+                    if (profilePictureInput.files.length > 0) {
+                        const file = profilePictureInput.files[0];
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            profilePicture = e.target.result; // Store base64-encoded image as string
+                            updateUser(email, username, profilePicture);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        // No profile picture uploaded
+                        updateUser(email, username, profilePicture);
+                    }
+                });
+
+                function updateUser(email, username, profilePicture) {
+                    // Prepare data to send to server
+                    const data = {
+                        email: email,
+                        username: username,
+                        profilePicture: profilePicture
+                    };
+
+                    // Send data to server
                     fetch('/profile', {
                         method: 'POST',
-                        body: formData
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                // Update UI with new data if any
                                 if (data.email) {
                                     document.getElementById('email').value = data.email;
                                 }
                                 if (data.username) {
                                     document.getElementById('username').value = data.username;
                                 }
-                                if (data.profilePictureUrl) {
+                                if (data.profilePicture) {
                                     let img = document.getElementById('profile-picture-display');
                                     if (!img) {
                                         img = document.createElement('img');
                                         img.id = 'profile-picture-display';
                                         document.getElementById('picture_label').after(img);
                                     }
-                                    img.src = data.profilePictureUrl;
+                                    img.src = data.profilePicture;
                                     img.style.maxWidth = '200px';
                                     document.getElementById('no-profile-picture')?.remove();
                                 }
@@ -251,7 +283,8 @@
                             console.error('Error:', error);
                             alert('An error occurred while updating the profile. Please try again.');
                         });
-                });
+                }
+
             </script>
 
             <input type="submit" value="Update Profile" data-cy="profile__btn">

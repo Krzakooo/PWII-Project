@@ -91,30 +91,18 @@ class AuthService
         return $user ? new User($user['id'], $user['email'], $user['password'], $user['username'], $user['profile_picture']) : null;
     }
 
-    public function updateProfilePicture(int $userId, string $profile_picture): bool
+    public function updateUserDetails($userId, $email, $username, $profilePicture)
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
-        $profile_picture = 'uploads/' . $profile_picture;
-        $success = $stmt->execute(['profile_picture' => $profile_picture, 'id' => $userId]);
+        $sql = "UPDATE users SET email = :email, username = :username, profile_picture = :profile_picture WHERE id = :userId";
+        $stmt = $this->pdo->prepare($sql);
+        $success = $stmt->execute([
+            'email' => $email,
+            'username' => $username,
+            'profile_picture' => $profilePicture,
+            'userId' => $userId,
+        ]);
 
         return $success;
     }
-
-    public function updateEmail(int $userId, string $email): bool
-    {
-        $stmt = $this->pdo->prepare("UPDATE users SET email = :email WHERE id = :id");
-        $success = $stmt->execute(['email' => $email, 'id' => $userId]);
-
-        return $success;
-    }
-
-    public function updateUsername(int $userId, string $username): bool
-    {
-        $stmt = $this->pdo->prepare("UPDATE users SET username = :username WHERE id = :id");
-        $success = $stmt->execute(['username' => $username, 'id' => $userId]);
-
-        return $success;
-    }
-
 
 }

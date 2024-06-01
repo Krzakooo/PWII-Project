@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bookworm\controller;
 
 require_once '../model/User.php';
@@ -30,7 +29,6 @@ class AuthController
         return $_SESSION['user_id'] ?? null;
     }
 
-
     public function showSignInForm(Request $request, Response $response): Response
     {
         session_start();
@@ -47,9 +45,13 @@ class AuthController
 
     public function signIn(Request $request, Response $response): Response
     {
-        $data = $request->getParsedBody();
-        $email = $data['email'];
-        $password = $data['password'];
+        session_start();
+
+        // Parse JSON body
+        $data = json_decode($request->getBody()->getContents(), true);
+
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
 
         $errors = [];
 
@@ -60,26 +62,33 @@ class AuthController
         }
 
         if (!empty($errors)) {
-            session_start();
-            $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signIn.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
-            $response->getBody()->write($content);
-            return $response;
+            $response->getBody()->write(json_encode(['success' => false, 'errors' => $errors]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
+
+        // Add debugging statements here
+        error_log("Attempting login for email: $email");
 
         if ($this->authService->login($email, $password)) {
             $user = $this->authService->getUserByEmail($email);
-
-            $_SESSION['user_id'] = $user->getId();
-            return $response->withHeader('Location', '/')->withStatus(302);
+            if ($user) {
+                $_SESSION['user_id'] = $user->getId();
+                error_log("Login successful for user ID: " . $user->getId());
+                $response->getBody()->write(json_encode(['success' => true]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            } else {
+                $errors[] = "Failed to retrieve user details after login.";
+                error_log("Failed to retrieve user details for email: $email");
+            }
         } else {
-            session_start();
-            $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signIn.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
-            $response->getBody()->write($content);
-            return $response;
+            $errors[] = "Invalid email or password.";
+            error_log("Login failed for email: $email");
         }
+
+        $response->getBody()->write(json_encode(['success' => false, 'errors' => $errors]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
+
 
     public function showSignUpForm(Request $request, Response $response): Response
     {
@@ -129,7 +138,6 @@ class AuthController
             return $response;
         }
 
-        // Create new user using AuthService's createUser method
         $user = $this->authService->signUp($email, $password, $username);
 
         if ($user) {
@@ -183,12 +191,12 @@ class AuthController
 
         $user = $this->authService->getUserById($userId);
 
-        $profilePictureUrl = $user->getProfilePicture();
+        $profilePicture = $user->getProfilePicture();
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $content = $this->twig->render('profile.twig', [
             'currentUser' => $user,
-            'profilePictureUrl' => $profilePictureUrl,
+            'profilePicture' => $profilePicture,
             'isLoggedIn' => $isLoggedIn,
             'userId' => $userId
         ]);
@@ -196,111 +204,43 @@ class AuthController
         return $response;
     }
 
-    public function updateProfile(Request $request, Response $response): Response
+
+    public function updateUser(Request $request, Response $response): Response
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
 
-        $user = $this->authService->getCurrentUser();
-        $data = $request->getParsedBody();
-        $email = $data['email'];
-        $username = $data['username'];
+        $userId = $_SESSION['user_id'];
+        $data = json_decode($request->getBody(), true);
+        $email = $data['email'] ?? null;
+        $username = $data['username'] ?? null;
+        $profilePicture = $data['profilePicture'] ?? null;
         $errors = [];
         $responseData = [];
 
-        if (!empty($email) && $email !== $user->getEmail()) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = "The email address is not valid.";
-            } elseif ($this->authService->getUserByEmail($email)) {
-                $errors[] = "The email address is already registered.";
+        // Check if any data needs to be updated
+        if ($email || $username || $profilePicture) {
+            // Update user details
+            $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePicture);
+            if ($success) {
+                $responseData['success'] = true;
             } else {
-                $success = $this->authService->updateEmail($user->getId(), $email);
-                if ($success) {
-                    $responseData['email'] = $email;
-                } else {
-                    $errors[] = "Failed to update email. Please try again later.";
-                }
+                $errors[] = "Failed to update user details. Please try again later.";
             }
+        } else {
+            $errors[] = "No data provided for update.";
         }
 
-        if (!empty($username) && $username !== $user->getUsername()) {
-            $existingUser = $this->authService->getUserByUsername($username);
-            if ($existingUser && $existingUser->getId() !== $user->getId()) {
-                $errors[] = "The username is already taken.";
-            } else {
-                $success = $this->authService->updateUsername($user->getId(), $username);
-                if ($success) {
-                    $responseData['username'] = $username;
-                } else {
-                    $errors[] = "Failed to update username. Please try again later.";
-                }
-            }
-        }
-
-        $uploadedFiles = $request->getUploadedFiles();
-        $profilePicture = $uploadedFiles['profile_picture'] ?? null;
-
-        if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
-            $uploadPath = __DIR__ . '/../public/uploads';
-            $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
-            if ($fileName) {
-                $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
-                if ($success) {
-                    $responseData['profilePictureUrl'] = '/uploads/' . $fileName;
-                } else {
-                    $errors[] = "Failed to update profile picture. Please try again later.";
-                }
-            } else {
-                $errors[] = "Failed to upload profile picture. Please try again.";
-            }
-        }
-
+        // Prepare response data
         if (!empty($errors)) {
             $responseData['errors'] = $errors;
-        } else {
-            $responseData['success'] = true;
         }
 
+        // Send response as JSON
         $response->getBody()->write(json_encode($responseData));
         return $response->withHeader('Content-Type', 'application/json');
     }
-
-
-    private function uploadProfilePicture(UploadedFileInterface $file, string $uploadPath): ?string
-    {
-        if ($file->getSize() > 1048576) {
-            return null;
-        }
-
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-        $fileExtension = strtolower(pathinfo($file->getClientFilename(), PATHINFO_EXTENSION));
-        if (!in_array($fileExtension, $allowedExtensions)) {
-            return null;
-        }
-
-        $imageSize = @getimagesize($file->getStream()->getMetadata('uri'));
-        if ($imageSize === false) {
-            return null;
-        }
-        list($width, $height) = $imageSize;
-
-        if ($width > 400 || $height > 400) {
-            return null;
-        }
-
-        $uuid = uniqid();
-        $newFilename = "{$uuid}.{$fileExtension}";
-        $destinationPath = "$uploadPath/$newFilename";
-
-        try {
-            $file->moveTo($destinationPath);
-            return $newFilename;
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
 
 }

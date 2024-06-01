@@ -89,7 +89,7 @@ $app->get('/profile', function (Request $request, Response $response, $args) use
     return $authController->showProfile($request, $response);
 });
 $app->post('/profile', function (Request $request, Response $response, $args) use ($authController) {
-    return $authController->updateProfile($request, $response);
+    return $authController->updateUser($request, $response);
 });
 
 // Routing to Discuss Forum

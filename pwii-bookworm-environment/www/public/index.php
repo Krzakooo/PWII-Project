@@ -66,7 +66,7 @@ $app->get('/sign-in', [$authController, 'showSignInForm']);
 $app->post('/sign-in', [$authController, 'signIn']);
 $app->post('/logout', [$authController, 'logout']);
 $app->get('/profile', [$authController, 'showProfile']);
-$app->post('/profile', [$authController, 'updateProfile']);
+$app->post('/profile', [$authController, 'updateUser']);
 
 // Index for Discussion Forum
 $app->get('/forums', [$forumController, 'getAllForums']);
