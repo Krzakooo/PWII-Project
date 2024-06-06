@@ -53,7 +53,7 @@ $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController, $authService);
 $bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
 
 

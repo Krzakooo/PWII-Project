@@ -3,11 +3,13 @@
 namespace Bookworm\controller;
 
 
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
 use Bookworm\service\TwigRenderer;
 use Bookworm\service\BookCatalogueService;
+use Bookworm\service\AuthService;
 
 
 class BookCatalogueController
@@ -15,22 +17,42 @@ class BookCatalogueController
     private $twig;
     private $service;
     private $authController;
+    private $authService;
 
-    public function __construct(TwigRenderer $twig, BookCatalogueService $service, AuthController $authController)
+    public function __construct(TwigRenderer $twig, BookCatalogueService $service, AuthController $authController, AuthService $authService)
     {
         $this->twig = $twig;
         $this->service = $service;
         $this->authController = $authController;
+        $this->authService = $authService;
+    }
+
+    public function getUserIdFromSession(): ?int
+    {
+        session_start();
+        return $_SESSION['user_id'] ?? null;
     }
 
     public function showAddBookForm(Request $request, Response $response): Response
     {
+        $userId = $this->getUserIdFromSession();
+
+        if (!$userId) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+
+        $user = $this->authService->getUserById($userId);
+
+        $isLoggedIn = isset($_SESSION['user_id']);
 
         $searchResults = $this->fetchBookSearchResults();
 
         // Render Twig template with data
         $htmlContent = $this->twig->render('catalogue.twig', [
             'searchResults' => $searchResults,
+            'isLoggedIn' => $isLoggedIn,
+            'userId' => $userId
+
         ]);
 
         // Create a new response object
