@@ -97,7 +97,7 @@ class AuthController
             return $response->withHeader('Location', '/')->withStatus(302);
         }
         $isLoggedIn = isset($_SESSION['user_id']);
-        $content = $this->twig->render('signIn.twig', ['isLoggedIn' => $isLoggedIn]);
+        $content = $this->twig->render('signup.twig', ['isLoggedIn' => $isLoggedIn]);
         $response->getBody()->write($content);
         return $response;
     }
