@@ -6,17 +6,28 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Bookworm\service\ForumService;
 use Bookworm\service\TwigRenderer;
+use Bookworm\service\AuthService;
 use Slim\Psr7\Response as SlimResponse;
 
 class ForumController
 {
     private TwigRenderer $twigRenderer;
     private ForumService $forumService;
+    private $authController;
+    private $authService;
 
-    public function __construct(TwigRenderer $twigRenderer, ForumService $forumService)
+    public function __construct(TwigRenderer $twigRenderer, ForumService $forumService, AuthController $authController, AuthService $authService)
     {
         $this->twigRenderer = $twigRenderer;
         $this->forumService = $forumService;
+        $this->authController = $authController;
+        $this->authService = $authService;
+    }
+
+    public function getUserIdFromSession(): ?int
+    {
+        session_start();
+        return $_SESSION['user_id'] ?? null;
     }
 
     public function getAllForums(Request $request, Response $response): Response
@@ -44,7 +55,15 @@ class ForumController
 //        }
         try {
             $forums = $this->forumService->getAllForums();
-            return $this->twigRenderer->renderResponse($response, 'forum.twig', ['forums' => $forums]);
+            $userId = $this->getUserIdFromSession();
+
+            if (!$userId) {
+                return $response->withHeader('Location', '/sign-in')->withStatus(302);
+            }
+
+
+            $isLoggedIn = isset($_SESSION['user_id']);
+            return $this->twigRenderer->renderResponse($response, 'forum.twig', ['forums' => $forums, 'isLoggedIn' => $isLoggedIn]);
         } catch (\Exception $e) {
             $responseData = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($responseData);

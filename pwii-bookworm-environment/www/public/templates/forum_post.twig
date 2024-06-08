@@ -72,7 +72,7 @@
 
                     alert('403 Forbidden: Access to this resource is forbidden.');
                   } else {
-                    console.error('Error:', response.status);
+                    console.error('Non Critical Error:', response.status);
                     alert('An error occurred: ' + response.status);
                   }
                 } else {
@@ -83,8 +83,8 @@
                 console.log('Data:', data);
               })
               .catch(error => {
+                console.log("Awaiting fetch")
                 console.error('Fetch error:', error);
-                alert('An error occurred: ' + error.message);
               });
     });
 </script>

@@ -41,8 +41,6 @@ class BookCatalogueController
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
 
-        $user = $this->authService->getUserById($userId);
-
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $searchResults = $this->fetchBookSearchResults();
@@ -214,8 +212,18 @@ class BookCatalogueController
         $bookId = $args['id'];
         $bookDetails = $this->service->getBookDetails($bookId);
 
+        $userId = $this->getUserIdFromSession();
+
+        if (!$userId) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+
+
+        $isLoggedIn = isset($_SESSION['user_id']);
+
         $htmlContent = $this->twig->render('book_details.twig', [
             'book' => $bookDetails,
+            'isLoggedIn' => $isLoggedIn,
         ]);
 
         $htmlResponse = new SlimResponse();

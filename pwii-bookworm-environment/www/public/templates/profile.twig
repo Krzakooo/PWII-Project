@@ -83,6 +83,7 @@
                     if (profilePictureInput.files.length > 0) {
                         const file = profilePictureInput.files[0];
                         const reader = new FileReader();
+                        console.log("dupa")
                         reader.onload = function(e) {
                             profilePicture = e.target.result; // Store base64-encoded image as string
                             updateUser(email, username, profilePicture);

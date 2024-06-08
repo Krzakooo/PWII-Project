@@ -31,6 +31,12 @@ class ForumPostController
         $this->authService = $authService;
     }
 
+    public function getUserIdFromSession(): ?int
+    {
+        session_start();
+        return $_SESSION['user_id'] ?? null;
+    }
+
     public function renderForumPostsPage(Request $request, Response $response, array $args)
     {
 //        $authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
@@ -53,6 +59,15 @@ class ForumPostController
         $forumData = $this->forumService->getForumById($forumId);
         $forumPosts = $this->forumPostService->getForumPostsByForumId($forumId);
 
+        $userId = $this->getUserIdFromSession();
+
+        if (!$userId) {
+            return $response->withHeader('Location', '/sign-in')->withStatus(302);
+        }
+
+
+        $isLoggedIn = isset($_SESSION['user_id']);
+
         $data = [
             'forum' => [
                 'forumName' => $forumData['title'],
@@ -60,8 +75,10 @@ class ForumPostController
                 'forumId' => $forumId,
             ],
             'posts' => $forumPosts,
+            'isLoggedIn' => $isLoggedIn
         ];
 
+        
         $renderedTemplate = $this->twigRenderer->render('forum_post.twig', $data);
 
         $response->getBody()->write($renderedTemplate);
