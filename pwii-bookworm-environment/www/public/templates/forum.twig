@@ -2,11 +2,10 @@
 {% block title %}Forum{% endblock %}
         
 {% block content %}
-<div class="centered-container">
 {% include 'menu.twig' %}
+<div class="centered-container">
     <h1>Discussion Forums</h1>
 
-    <!-- Forum List -->
     <ul id="forumList">
         {% for forum in forums %}
             <li>

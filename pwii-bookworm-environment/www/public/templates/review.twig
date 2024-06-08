@@ -2,6 +2,7 @@
 {% block title %}Review Book{% endblock %}
 
 {% block content %}
+{% include 'menu.twig' %}
 <div class="container">
     <h1>Write a Review</h1>
     <form action="/catalogue/{{ book.id }}/review" method="POST">

@@ -3,8 +3,8 @@
 {% block title %}Forum Post{% endblock %}
 
 {% block content %}
-<div class="centered-container">
 {% include 'menu.twig' %}
+<div class="centered-container">
     <div class="forum-details" data-forum-id="{{ forum.forumId }}">
         <h1>{{ forum.forumName | upper }}</h1>
         <p>{{ forum.forumDescription }}</p>
