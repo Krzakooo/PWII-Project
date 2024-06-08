@@ -1,120 +1,8 @@
 {% extends "base.twig" %}
 
-{% block title %}Book details{% endblock %}
+{% block title %}Book Details{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Details</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .book-details {
-            margin-bottom: 40px;
-        }
-
-        .book-details div {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .search-results {
-            margin-top: 40px;
-        }
-
-        .search-results h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .search-results div {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .search-results .category {
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        .logo {
-            font-size: 22px !important;
-        }
-        
-        
-        form.menuit {
-            margin-bottom: 20px;
-        }
-
-        button[type="submit"] {
-            text-align: left;
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 200px;
-            transition: color 0.3s ease;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        a.menuit {
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
-            background-color: #4CAF50;
-            color: white !important;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 200px;
-        }
-
-        a.menuit:hover,
-        a.menuit:focus {
-            text-decoration: underline;
-            background-color: #45a049;
-        }
-
-        a:visited {
-            color: #555;
-        }
-        ul {
-            list-style-type: none;
-        }
-    </style>
-</head>
-<body>
 <div class="container">
     {% include 'menu.twig' %}
     <div class="book-details">
@@ -283,5 +171,4 @@
 
     fetchRatingsAndReviews();
 </script>
-</body>
-</html>
+{% endblock %}

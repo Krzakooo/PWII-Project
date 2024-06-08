@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rate Book</title>
+{% extends "base.twig" %}
+{% block title %}Rate Book{% endblock %}
 
-</head>
-<body>
+{% block content %}
 <div class="container">
     <h1>Rate This Book</h1>
     <form action="/catalogue/{{ book.id }}/rate" method="POST">
@@ -21,5 +16,4 @@
         <button type="submit">Submit Rating</button>
     </form>
 </div>
-</body>
-</html>
+{% endblock %}

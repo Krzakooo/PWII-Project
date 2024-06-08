@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
+{% extends "base.twig" %}
+{% block title %}SignIn{% endblock %}
+
+{% block content %}
 <div class="centered-container">
     {% include 'menu.twig' %}
     <h1>Sign In</h1>
@@ -69,5 +64,4 @@
     });
 
 </script>
-</body>
-</html>
+{% endblock %}

@@ -24,15 +24,57 @@
             margin: 0 auto;
         }
 
+        /*catalogue.twig
+          .centered-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }*/
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         /* Header styles */
         h1 {
             margin-bottom: 20px;
             text-align: center;
         }
 
+          /* Forum list styles */
+          #forumList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #forumList li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        #forumList li strong {
+            display: block;
+            font-size: 1.4em; /* Større skriftstørrelse for titlen */
+            font-weight: bold; /* Tykkere skrift for titlen */
+            margin-bottom: 10px;
+        }
+
+        #forumList li p {
+            font-size: 1.2em; /* Mindre skriftstørrelse for beskrivelsen */
+            margin-bottom: 10px; /* Added */
+        }
+
         /* Forum list styles */
         .forum-details {
             text-align: center;
+            
         }
 
         .post-list ul {
@@ -60,6 +102,9 @@
         }
 
         /*forum_post css*/
+        #createBookForm input[type="text"],
+        #createBookForm input[type="number"],
+        #createBookForm textarea,
         input[type="text"],
         input[type="email"],
         input[type="password"],
@@ -81,6 +126,7 @@
             margin-bottom: 20px;
         }
 
+        #createBookForm button[type="submit"],
         button[type="submit"],
         input[type="submit"] {
             text-align: left;
@@ -95,6 +141,7 @@
             transition: color 0.3s ease;
         }
 
+        #createBookForm button[type="submit"]:hover,
         button[type="submit"]:hover,
         input[type="submit"]:hover  {
             background-color: #45a049;
@@ -135,6 +182,12 @@
             margin-top: 20px;
         }
 
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
         a {
             color: #333;
             text-decoration: none;
@@ -147,5 +200,225 @@
             text-decoration: underline;
         }
 
+         /* Button styles */
+         .forum-btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-        /*koniec bazy z forum-post.twig*/
+        .forum-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 80%;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .custom-btn {
+            background-color: #45a049;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .book-details {
+            margin-bottom: 40px;
+        }
+
+        .book-details div {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-results {
+            margin-top: 40px;
+        }
+
+        .search-results h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-results div {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-results .category {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .category {
+            flex: 0 0 auto;
+            width: 300px;
+            margin-right: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .category h2 {
+            margin-bottom: 20px;
+        }
+
+        .books {
+            list-style-type: none;
+            padding: 0;
+        }
+
+      /*  .books li {
+            margin-bottom: 10px;
+        }*/
+
+        .books li {
+            margin-bottom: 10px;
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .books li .book-details {
+            text-align: center;
+        }
+
+        .books li img {
+            max-width: 150px;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .books li .book-details {
+            text-align: center;
+            margin: 0 auto;
+            width: 80%;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .pagination button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .pagination button:hover {
+            background-color: #45a049;
+        }
+
+        #createBookBtn {
+            display: block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #createBookBtn:hover {
+            background-color: #45a049;
+        }
+
+        #createBookForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+            width: 80%;
+        }
+
+        #createBookForm label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .custom-file-upload {
+            font-weight: normal;
+            display: inline;
+        }
+
+        
