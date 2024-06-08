@@ -24,7 +24,7 @@
     {% if profilePicture %}
         <img id="profile-picture-display" src="data:image/png;base64,{{ profilePicture }}" alt="Profile Picture" style="max-width: 200px;">
     {% else %}
-        <p id="no-profile-picture">No profile picture available</p>
+        <img id="no-profile-picture" src="../noimg/noimg.jpg" alt="Profile Picture" style="max-width: 200px;">
     {% endif %}
 
     {% if currentUser %}
@@ -61,9 +61,10 @@
                         const img = document.getElementById('profile-picture-display');
                         if (img) {
                             img.remove();
-                            const noProfilePictureText = document.createElement('p');
+                            const noProfilePictureText = document.createElement('img');
                             noProfilePictureText.id = 'no-profile-picture';
-                            noProfilePictureText.innerText = 'No profile picture available';
+                            img.src = "../noimg/noimg.jpg";
+                            document.getElementById('picture_label').after(img);
                             document.getElementById('profile_form').insertBefore(noProfilePictureText, document.getElementById('profile_form').firstChild);
                         }
                     }
