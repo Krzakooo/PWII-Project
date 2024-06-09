@@ -24,11 +24,11 @@
             margin: 0 auto;
         }
 
-        /*catalogue.twig
-          .centered-container {
+       
+          .centered-container-catalogue {
             max-width: 1200px;
             margin: 0 auto;
-        }*/
+        }
 
         .container {
             max-width: 800px;
