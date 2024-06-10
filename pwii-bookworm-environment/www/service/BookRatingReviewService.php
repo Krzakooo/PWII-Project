@@ -13,36 +13,34 @@ class BookRatingReviewService
         $this->db = $db;
     }
 
-
-    public function createRating($userId, $bookId, $rating): void
+    public function createRating(int $userId, int $bookId, int $rating): bool
     {
         $stmt = $this->db->prepare("
         INSERT INTO ratings (user_id, book_id, rating) 
         VALUES (:user_id, :book_id, :rating)
     ");
-        $stmt->execute([
+        $success = $stmt->execute([
             'user_id' => $userId,
             'book_id' => $bookId,
             'rating' => $rating,
         ]);
+
+        return $success;
     }
 
-    public function createReview(array $reviewData): bool
-    {
-        if (isset($reviewData['user_id'], $reviewData['book_id'], $reviewData['review_text'])) {
-            $stmt = $this->db->prepare("
-            INSERT INTO reviews (user_id, book_id, review_text) 
-            VALUES (:user_id, :book_id, :review_text)
-        ");
 
-            return $stmt->execute([
-                'user_id' => $reviewData['user_id'],
-                'book_id' => $reviewData['book_id'],
-                'review_text' => $reviewData['review_text'],
-            ]);
-        } else {
-            return false;
-        }
+    public function createReview(int $userId, int $bookId, string $reviewText): bool
+    {
+        $sql = "INSERT INTO reviews (user_id, book_id, review_text) VALUES (:user_id, :book_id, :review_text)";
+        $stmt = $this->db->prepare($sql);
+
+        $success = $stmt->execute([
+            'user_id' => $userId,
+            'book_id' => $bookId,
+            'review_text' => $reviewText,
+        ]);
+
+        return $success;
     }
 
 
@@ -73,10 +71,10 @@ class BookRatingReviewService
     public function saveRating($userId, $bookId, $rating): void
     {
         $stmt = $this->db->prepare("
-        INSERT INTO ratings (user_id, book_id, rating) 
-        VALUES (:user_id, :book_id, :rating) 
-        ON DUPLICATE KEY UPDATE rating = :updated_rating
-    ");
+            INSERT INTO ratings (user_id, book_id, rating) 
+            VALUES (:user_id, :book_id, :rating) 
+            ON DUPLICATE KEY UPDATE rating = :updated_rating
+        ");
         $stmt->execute([
             'user_id' => $userId,
             'book_id' => $bookId,
@@ -84,7 +82,6 @@ class BookRatingReviewService
             'updated_rating' => $rating,
         ]);
     }
-
 
     public function deleteRating($userId, $bookId): void
     {
@@ -106,6 +103,6 @@ class BookRatingReviewService
     {
         $stmt = $this->db->prepare("SELECT review_text FROM reviews WHERE book_id = :book_id");
         $stmt->execute(['book_id' => $bookId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC)['review_text'];
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

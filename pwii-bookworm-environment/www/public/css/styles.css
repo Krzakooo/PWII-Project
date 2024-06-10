@@ -1,424 +1,505 @@
-        /* Reset default browser styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+/* Reset default browser styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        /* Body styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
 
-        ul {
-            list-style-type: none;
-        }
+ul {
+    list-style-type: none;
+}
 
-        /* Centered container */
-        .centered-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+/* Centered container */
+.centered-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-       
-          .centered-container-catalogue {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.centered-container-catalogue {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        /* Header styles */
-        h1 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
+/* Header styles */
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
 
-          /* Forum list styles */
-          #forumList {
-            list-style-type: none;
-            padding: 0;
-        }
+/* Forum list styles */
+#forumList {
+    list-style-type: none;
+    padding: 0;
+}
 
-        #forumList li {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 10px;
-        }
+#forumList li {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 10px;
+}
 
-        #forumList li strong {
-            display: block;
-            font-size: 1.4em; /* Større skriftstørrelse for titlen */
-            font-weight: bold; /* Tykkere skrift for titlen */
-            margin-bottom: 10px;
-        }
+#forumList li strong {
+    display: block;
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 
-        #forumList li p {
-            font-size: 1.2em; /* Mindre skriftstørrelse for beskrivelsen */
-            margin-bottom: 10px; /* Added */
-        }
+#forumList li p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
 
-        /* Forum list styles */
-        .forum-details {
-            text-align: center;
-            
-        }
+/* Forum list styles */
+.forum-details {
+    text-align: center;
+}
 
-        .post-list ul {
-            list-style-type: none;
-            padding: 0;
-        }
+.post-list ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-        .post-list li {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 10px;
-        }
+.post-list li {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 10px;
+}
 
-        .post-list li p {
-            margin: 0;
-        }
+.post-list li p {
+    margin: 0;
+}
 
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
 
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+/*forum_post css*/
+#createBookForm input[type="text"],
+#createBookForm input[type="number"],
+#createBookForm textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 
-        /*forum_post css*/
-        #createBookForm input[type="text"],
-        #createBookForm input[type="number"],
-        #createBookForm textarea,
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+.logo {
+    font-size: 22px !important;
+}
 
-        .logo {
-            font-size: 22px !important;
-        }
+form.menuit {
+    margin-bottom: 20px;
+}
 
+#createBookForm button[type="submit"],
+button[type="submit"],
+input[type="submit"] {
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+    transition: color 0.3s ease;
+}
 
-        form.menuit {
-            margin-bottom: 20px;
-        }
+#createBookForm button[type="submit"]:hover,
+button[type="submit"]:hover,
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
 
-        #createBookForm button[type="submit"],
-        button[type="submit"],
-        input[type="submit"] {
-            text-align: left;
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 200px;
-            transition: color 0.3s ease;
-        }
+a.menuit {
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s ease;
+    background-color: #4CAF50;
+    color: white !important;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+}
 
-        #createBookForm button[type="submit"]:hover,
-        button[type="submit"]:hover,
-        input[type="submit"]:hover  {
-            background-color: #45a049;
-        }
+a.menuit:hover,
+a.menuit:focus {
+    text-decoration: underline;
+    background-color: #45a049;
+}
 
-        a.menuit {
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
-            background-color: #4CAF50;
-            color: white !important;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 200px;
-        }
+a:visited {
+    color: #555;
+}
 
-        a.menuit:hover,
-        a.menuit:focus {
-            text-decoration: underline;
-            background-color: #45a049;
-        }
+/* Form styles */
+form.form {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
 
-        a:visited {
-            color: #555;
-        }
+form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
 
-        
-        /* Form styles */
-        form.form {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-top: 20px;
-        }
+a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
 
-        form label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+a:hover,
+a:focus {
+    color: #444;
+    text-decoration: underline;
+}
 
-        a {
-            color: #333;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+/* Button styles */
+.forum-btn {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-        a:hover,
-        a:focus {
-            color: #444;
-            text-decoration: underline;
-        }
+.forum-btn:hover {
+    background-color: #45a049;
+}
 
-         /* Button styles */
-         .forum-btn {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
 
-        .forum-btn:hover {
-            background-color: #45a049;
-        }
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    text-align: center;
+}
 
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 80%;
-            text-align: center;
-        }
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+.custom-btn,
+.custom-btn-goto {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-        }
+.custom-btn:hover,
+.custom-btn-goto:hover {
+    background-color: #45a049;
+    color: white;
+}
 
-        .custom-btn {
-            background-color: #45a049;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-right: 10px;
-        }
+a.custom-btn-goto {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-        .book-details {
-            margin-bottom: 40px;
-        }
+a.custom-btn-goto:hover {
+    background-color: #45a049;
+}
 
-        .book-details div {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
+.book-details {
+    margin-bottom: 40px;
+}
 
-        .search-results {
-            margin-top: 40px;
-        }
+.book-details div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
 
-        .search-results h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+.search-results {
+    margin-top: 40px;
+}
 
-        .search-results div {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
+.search-results h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-        .search-results .category {
-            font-weight: bold;
-            margin-top: 20px;
-        }
+.search-results div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
 
-        .categories {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-        }
+.search-results .category {
+    font-weight: bold;
+    margin-top: 20px;
+}
 
-        .category {
-            flex: 0 0 auto;
-            width: 300px;
-            margin-right: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-        }
+.categories {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
 
-        .category h2 {
-            margin-bottom: 20px;
-        }
+.category {
+    flex: 0 0 auto;
+    width: 300px;
+    margin-right: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
 
-        .books {
-            list-style-type: none;
-            padding: 0;
-        }
+.category h2 {
+    margin-bottom: 20px;
+}
 
-      /*  .books li {
-            margin-bottom: 10px;
-        }*/
+.books {
+    list-style-type: none;
+    padding: 0;
+}
 
-        .books li {
-            margin-bottom: 10px;
-            width: 200px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+.books li {
+    margin-bottom: 10px;
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 
-        .books li .book-details {
-            text-align: center;
-        }
+.books li .book-details {
+    text-align: center;
+}
 
-        .books li img {
-            max-width: 150px;
-            height: auto;
-            margin: 10px auto;
-            display: block;
-        }
+.books li img {
+    max-width: 150px;
+    height: auto;
+    margin: 10px auto;
+    display: block;
+}
 
-        .books li .book-details {
-            text-align: center;
-            margin: 0 auto;
-            width: 80%;
-        }
+.books li .book-details {
+    text-align: center;
+    margin: 0 auto;
+    width: 80%;
+}
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
 
-        .pagination button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
+.pagination button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 0 5px;
+}
 
-        .pagination button:hover {
-            background-color: #45a049;
-        }
+.pagination button:hover {
+    background-color: #45a049;
+}
 
-        #createBookBtn {
-            display: block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 20px auto;
-            text-align: center;
-        }
+#createBookBtn {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px auto;
+    text-align: center;
+}
 
-        #createBookBtn:hover {
-            background-color: #45a049;
-        }
+#createBookBtn:hover {
+    background-color: #45a049;
+}
 
-        #createBookForm {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            z-index: 1000;
-            width: 80%;
-        }
+#createBookForm {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1000;
+    width: 80%;
+}
 
-        #createBookForm label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+#createBookForm label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
 
-        .cancel-btn {
-            background-color: #f44336;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+.cancel-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-        .cancel-btn:hover {
-            background-color: #d32f2f;
-        }
+.cancel-btn:hover {
+    background-color: #d32f2f;
+}
 
-        .custom-file-upload {
-            font-weight: normal;
-            display: inline;
-        }
+.custom-file-upload {
+    font-weight: normal;
+    display: inline;
+}
 
-        
+/* Button styles */
+.menu-list button,
+.menu-list a {
+    text-decoration: none;
+    background-color: #f2f2f2;
+    color: #333;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-style: italic;
+    margin-right: 10px;
+}
+
+.menu-list button:hover,
+.menu-list a:hover {
+    background-color: #e0e0e0;
+}
+
+.menu-list li {
+    display: inline;
+}
+
+.menu-list li:first-child {
+    margin-right: auto;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.image-container img {
+    width: 200px;
+    height: auto;
+    margin: 0 10px;
+    border-radius: 5px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.menu-list {
+    display: flex;
+    list-style: none;
+}
+
+.menu-list li {
+    margin-right: 10px;
+}
+
+.menuIt {
+    text-decoration: none;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.menuIt:hover {
+    background-color: #f0f0f0;
+}
+

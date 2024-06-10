@@ -220,27 +220,27 @@ class AuthController
         $errors = [];
         $responseData = [];
 
-        // Check if any data needs to be updated
-        if ($email || $username || $profilePicture) {
-            // Update user details
-            $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePicture);
-            if ($success) {
-                $responseData['success'] = true;
+        if ($email !== null || $username !== null || $profilePicture !== null) {
+            if ($profilePicture !== null && !is_string($profilePicture)) {
+                $errors[] = "Profile picture must be a string.";
             } else {
-                $errors[] = "Failed to update user details. Please try again later.";
+                $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePicture);
+                if ($success) {
+                    $responseData['success'] = true;
+                } else {
+                    $errors[] = "Failed to update user details. Please try again later.";
+                }
             }
         } else {
             $errors[] = "No data provided for update.";
         }
 
-        // Prepare response data
         if (!empty($errors)) {
             $responseData['errors'] = $errors;
         }
-
-        // Send response as JSON
         $response->getBody()->write(json_encode($responseData));
         return $response->withHeader('Content-Type', 'application/json');
     }
+
 
 }

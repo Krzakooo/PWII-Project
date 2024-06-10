@@ -53,10 +53,10 @@ $bookRatingReviewService= new BookRatingReviewService($pdo);
 // Controllers
 $authController = new AuthController($twigRenderer, $authService);
 $homeController = new HomeController($twigRenderer);
-$forumController = new ForumController($twigRenderer, $forumService);
-$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController);
+$forumController = new ForumController($twigRenderer, $forumService, $authController, $authService);
+$bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController, $authService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
-$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
+$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService, $authController);
 
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) use ($homeController) {
@@ -163,6 +163,7 @@ $app->put('/catalogue/{id}/review', function (Request $request, Response $respon
 $app->delete('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
     return $bookRatingReviewController->deleteReview($request, $response, $args);
 });
+
 $app->put('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
     return $bookRatingReviewController->rateBook($request, $response, $args);
 });

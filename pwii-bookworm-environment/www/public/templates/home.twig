@@ -2,9 +2,13 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% include 'menu.twig' %}
-<div class="centered-container">
-    <h1>Welcome to Bookworm</h1>
-    <p>Discover, rate, and discuss your favorite books!</p>
-</div>
+    {% include 'menu.twig' %}
+    <div class="centered-container">
+        <h1 style="font-size: 48px; font-style: italic; text-align: center;">Welcome to Bookworm</h1>
+        <p style="text-align: center;">Discover, rate, and discuss your favorite books!</p>
+
+        <div class="image-container">
+            <img src="../img/book_quote.png" alt="Book Quote">
+        </div>
+    </div>
 {% endblock %}

@@ -54,7 +54,7 @@ $homeController = new HomeController($twigRenderer);
 $forumController = new ForumController($twigRenderer, $forumService, $authController, $authService);
 $forumPostController = new ForumPostController($twigRenderer, $forumPostService, $forumService, $authService);
 $bookCatalogueController = new BookCatalogueController($twigRenderer, $bookCatalogueService, $authController, $authService);
-$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService);
+$bookRatingReviewController = new BookRatingReviewController($twigRenderer, $bookRatingReviewService, $authController);
 
 
 $app->get('/', [$homeController, 'index']);

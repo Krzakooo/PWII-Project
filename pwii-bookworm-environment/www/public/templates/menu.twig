@@ -4,38 +4,31 @@
 
         {% if isLoggedIn %}
             <li>
-                <form class="menuIt" action="/logout" method="post">
-                    <button type="submit">Logout</button>
-                </form>
-            </li>
-            <li>
                 <form class="menuIt" action="/profile" method="get">
-                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <input type="hidden" name="userId" value="{{ userId }}">
                     <button type="submit">Profile</button>
                 </form>
             </li>
             <li>
                 <form class="menuIt" action="/catalogue" method="get">
-                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <input type="hidden" name="userId" value="{{ userId }}">
                     <button type="submit">Book Catalogue</button>
                 </form>
             </li>
             <li>
                 <form class="menuIt" action="/forums" method="get">
-                    <input type="hidden" name="userId" value="{{ user_id }}">
+                    <input type="hidden" name="userId" value="{{ userId }}">
                     <button type="submit">Forums</button>
+                </form>
+            </li>
+            <li>
+                <form class="menuIt" action="/logout" method="post">
+                    <button type="submit">Logout</button>
                 </form>
             </li>
         {% else %}
             <li><a class="menuIt" href="/sign-in">Sign In</a></li>
             <li><a class="menuIt" href="/sign-up">Sign Up</a></li>
-            {% set user_id = 0 %}
         {% endif %}
     </ul>
 </nav>
-
-<script>
-
-    const userId = {{ user_id }};
-    console.log('Current user ID:', userId);
-</script>
