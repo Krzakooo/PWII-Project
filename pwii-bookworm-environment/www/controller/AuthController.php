@@ -31,14 +31,14 @@ class AuthController
 
     public function showSignInForm(Request $request, Response $response): Response
     {
-        session_start();
+        $userId = $this->getUserIdFromSession();
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
 
         $isLoggedIn = isset($_SESSION['user_id']);
 
-        $content = $this->twig->render('signIn.twig', ['isLoggedIn' => $isLoggedIn]);
+        $content = $this->twig->render('signIn.twig', ['isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -92,12 +92,12 @@ class AuthController
 
     public function showSignUpForm(Request $request, Response $response): Response
     {
-        session_start();
+        $userId = $this->getUserIdFromSession();
         if (isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
         }
         $isLoggedIn = isset($_SESSION['user_id']);
-        $content = $this->twig->render('signup.twig', ['isLoggedIn' => $isLoggedIn]);
+        $content = $this->twig->render('signup.twig', ['isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
         $response->getBody()->write($content);
         return $response;
     }
@@ -129,11 +129,13 @@ class AuthController
         if ($password !== $repeatPassword) {
             $errors[] = "The passwords do not match.";
         }
+        
+        $userId = $this->getUserIdFromSession();
 
         if (!empty($errors)) {
-            session_start();
+            
             $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
+            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
             $response->getBody()->write($content);
             return $response;
         }
@@ -141,16 +143,16 @@ class AuthController
         $user = $this->authService->signUp($email, $password, $username);
 
         if ($user) {
-            session_start();
+            
             $_SESSION['user_id'] = $user->getId();
             $_SESSION['flash_message'] = "You are now signed up, welcome to your site";
 
             return $response->withHeader('Location', '/profile')->withStatus(302);
         } else {
             $errors[] = "An account with this email address already exists.";
-            session_start();
+            
             $isLoggedIn = isset($_SESSION['user_id']);
-            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn]);
+            $content = $this->twig->render('signup.twig', ['errors' => $errors, 'data' => $data, 'isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
             $response->getBody()->write($content);
             return $response;
         }

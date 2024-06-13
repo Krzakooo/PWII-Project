@@ -75,7 +75,8 @@ class ForumPostController
                 'forumId' => $forumId,
             ],
             'posts' => $forumPosts,
-            'isLoggedIn' => $isLoggedIn
+            'isLoggedIn' => $isLoggedIn,
+            'userId' => $userId
         ];
 
         

@@ -224,6 +224,7 @@ class BookCatalogueController
         $htmlContent = $this->twig->render('book_details.twig', [
             'book' => $bookDetails,
             'isLoggedIn' => $isLoggedIn,
+            'userId' => $userId
         ]);
 
         $htmlResponse = new SlimResponse();

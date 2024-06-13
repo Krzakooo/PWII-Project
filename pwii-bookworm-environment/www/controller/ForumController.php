@@ -63,7 +63,7 @@ class ForumController
 
 
             $isLoggedIn = isset($_SESSION['user_id']);
-            return $this->twigRenderer->renderResponse($response, 'forum.twig', ['forums' => $forums, 'isLoggedIn' => $isLoggedIn]);
+            return $this->twigRenderer->renderResponse($response, 'forum.twig', ['forums' => $forums, 'isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
         } catch (\Exception $e) {
             $responseData = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($responseData);

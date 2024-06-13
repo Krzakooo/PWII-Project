@@ -21,7 +21,9 @@ class HomeController
 
         $isLoggedIn = isset($_SESSION['user_id']);
 
-        $content = $this->twig->render('home.twig', ['isLoggedIn' => $isLoggedIn]);
+        $userId = $_SESSION['user_id'];
+
+        $content = $this->twig->render('home.twig', ['isLoggedIn' => $isLoggedIn, 'userId' => $userId]);
         $response->getBody()->write($content);
         return $response;
     }
