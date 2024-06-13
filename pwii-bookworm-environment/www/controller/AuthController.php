@@ -213,20 +213,29 @@ class AuthController
         if (!isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
-
+    
         $userId = $_SESSION['user_id'];
-        $data = json_decode($request->getBody(), true);
-        $email = $data['email'] ?? null;
-        $username = $data['username'] ?? null;
-        $profilePicture = $data['profilePicture'] ?? null;
+        $email = $_POST['email'] ?? null;
+        $username = $_POST['username'] ?? null;
+        $profilePicture = $_FILES['profilePicture'] ?? null;
         $errors = [];
         $responseData = [];
-
+        
         if ($email !== null || $username !== null || $profilePicture !== null) {
-            if ($profilePicture !== null && !is_string($profilePicture)) {
-                $errors[] = "Profile picture must be a string.";
-            } else {
-                $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePicture);
+            $profilePictureBase64 = null;
+    
+            if ($profilePicture !== null) {
+                if ($profilePicture['error'] === UPLOAD_ERR_OK) {
+                    $tempFilePath = $profilePicture['tmp_name'];
+                    $fileContents = file_get_contents($tempFilePath);
+                    $profilePictureBase64 = base64_encode($fileContents);
+                } else {
+                    $errors[] = "File upload error.";
+                }
+            }
+    
+            if (empty($errors)) {
+                $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePictureBase64);
                 if ($success) {
                     $responseData['success'] = true;
                 } else {
@@ -236,10 +245,11 @@ class AuthController
         } else {
             $errors[] = "No data provided for update.";
         }
-
+    
         if (!empty($errors)) {
             $responseData['errors'] = $errors;
         }
+    
         $response->getBody()->write(json_encode($responseData));
         return $response->withHeader('Content-Type', 'application/json');
     }

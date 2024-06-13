@@ -60,46 +60,50 @@
 
                     if (profilePictureInput.files.length > 0) {
                         const file = profilePictureInput.files[0];
-                        const reader = new FileReader();
+                        profilePicture = profilePictureInput.files[0];
+                        updateUser(email, username, profilePicture);
+                        //const reader = new FileReader();
 
-                        reader.onload = function(e) {
-                            profilePicture = e.target.result;
-                            updateUser(email, username, profilePicture);
-                        };
+                        //reader.onload = function(e) {
+                        //    profilePicture = e.target.result;
+                            
+                        //    updateUser(email, username, profilePicture);
+                        //};
 
-                        reader.readAsDataURL(file);
+                        //reader.readAsDataURL(file);
+                        
                     } else {
                         updateUser(email, username, profilePicture);
                     }
                 });
 
                 function updateUser(email, username, profilePicture) {
-                    const data = {
-                        email: email,
-                        username: username,
-                        profile_picture: profilePicture
-                    };
+                    console.log(profilePicture);
+
+                    const formData = new FormData();
+                    formData.append('email', email);
+                    formData.append('username', username);
+                    formData.append('profilePicture', profilePicture);
 
                     fetch('/profile', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
+                        body: formData
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Profile updated successfully!');
-                            } else {
-                                alert('Failed to update profile: ' + data.errors.join(', '));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while updating the profile. Please try again.');
-                        });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Profile updated successfully!');
+                            console.log(data.success);
+                        } else {
+                            alert('Failed to update profile: ' + data.errors.join(', '));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating the profile. Please try again.');
+                    });
                 }
+
             });
         </script>
 
