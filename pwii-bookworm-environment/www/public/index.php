@@ -89,12 +89,10 @@ $app->get('/catalogue/{id}', [$bookCatalogueController, 'getBookDetails']);
 
 // Rating & Review
 $app->get('/catalogue/{id}/ratings', [$bookRatingReviewController, 'getRatings']);
-$app->post('/catalogue/{id}/rate', [$bookRatingReviewController, 'createRating']);
 $app->get('/catalogue/{id}/reviews', [$bookRatingReviewController, 'getReviews']);
-$app->post('/catalogue/{id}/review', [$bookRatingReviewController, 'createReview']);
 $app->put('/catalogue/{id}/rate', [$bookRatingReviewController, 'rateBook']);
-$app->delete('/catalogue/{id}/rate', [$bookRatingReviewController, 'deleteRating']);
 $app->put('/catalogue/{id}/review', [$bookRatingReviewController, 'reviewBook']);
+$app->delete('/catalogue/{id}/rate', [$bookRatingReviewController, 'deleteRating']);
 $app->delete('/catalogue/{id}/review', [$bookRatingReviewController, 'deleteReview']);
 
 $app->run();

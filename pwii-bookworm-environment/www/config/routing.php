@@ -150,14 +150,6 @@ $app->get('/catalogue/{id}/reviews', function (Request $request, Response $respo
     return $bookRatingReviewController->getReviews($request, $response, $args);
 });
 
-$app->post('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
-    return $bookRatingReviewController->createReview($request, $response, $args);
-});
-
-$app->post('/catalogue/{id}/rate', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
-    return $bookRatingReviewController->createRating($request, $response, $args);
-});
-
 $app->put('/catalogue/{id}/review', function (Request $request, Response $response, $args) use ($bookRatingReviewController) {
     return $bookRatingReviewController->reviewBook($request, $response, $args);
 });

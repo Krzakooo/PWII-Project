@@ -21,79 +21,6 @@ class BookRatingReviewController
         $this->authController = $authController;
     }
 
-    public function createRating(Request $request, Response $response, $args): Response
-    {
-        try {
-            session_start();
-
-            $userId = $_SESSION['user_id'] ?? null;
-            $bookId = $args['id'];
-            $parsedBody = $request->getParsedBody();
-            $rating = $parsedBody['rating'];
-            var_dump($parsedBody);
-
-            $success = $this->service->createRating($userId, $bookId, $rating);
-
-            if ($success) {
-                $responseData = [
-                    'message' => 'Rating created successfully',
-                    'userId' => $userId,
-                    'bookId' => $bookId,
-                    'rating' => $rating
-                ];
-                $statusCode = 201;
-            } else {
-                $responseData = ['error' => 'Failed to create rating'];
-                $statusCode = 400;
-            }
-
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode($responseData));
-            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
-
-            return $jsonResponse->withStatus($statusCode);
-        } catch (\Exception $e) {
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode(['error' => 'An error occurred']));
-            return $jsonResponse->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
-
-    public function createReview(Request $request, Response $response, $args): Response
-    {
-        try {
-            $userId = $this->authController->getUserIdFromSession();
-            $bookId = $args['id'];
-            $parsedBody = $request->getParsedBody();
-            $review = $parsedBody['review'];
-
-            $success = $this->service->createReview($userId, $bookId, $review);
-
-            if ($success) {
-                $responseData = [
-                    'message' => 'Review created successfully',
-                    'userId' => $userId,
-                    'bookId' => $bookId,
-                    'review' => $review
-                ];
-                $statusCode = 201;
-            } else {
-                $responseData = ['error' => 'Failed to create review'];
-                $statusCode = 400;
-            }
-
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode($responseData));
-            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
-
-            return $jsonResponse->withStatus($statusCode);
-        } catch (\Exception $e) {
-            $jsonResponse = new SlimResponse();
-            $jsonResponse->getBody()->write(json_encode(['error' => 'An error occurred']));
-            return $jsonResponse->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
-
 
     public function getRatings(Request $request, Response $response, $args): Response
     {
@@ -169,16 +96,32 @@ class BookRatingReviewController
             $parsedBody = $request->getParsedBody();
             $review = $parsedBody['review'];
 
-            $this->service->saveReview($userId, $bookId, $review);
+            $success = $this->service->createReview($userId, $bookId, $review);
 
-            $responseData = ['message' => 'Review saved successfully'];
-            $response->getBody()->write(json_encode($responseData));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            if ($success) {
+                $responseData = [
+                    'message' => 'Review created successfully',
+                    'userId' => $userId,
+                    'bookId' => $bookId,
+                    'review' => $review
+                ];
+                $statusCode = 201;
+            } else {
+                $responseData = ['error' => 'Failed to create review'];
+                $statusCode = 400;
+            }
+
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode($responseData));
+            $jsonResponse = $jsonResponse->withHeader('Content-Type', 'application/json');
+
+            return $jsonResponse->withStatus($statusCode);
         } catch (\Exception $e) {
-            $errorResponse = ['error' => 'An error occurred'];
-            $response->getBody()->write(json_encode($errorResponse));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            $jsonResponse = new SlimResponse();
+            $jsonResponse->getBody()->write(json_encode(['error' => 'An error occurred']));
+            return $jsonResponse->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+
     }
 
     public function deleteReview(Request $request, Response $response, $args): Response

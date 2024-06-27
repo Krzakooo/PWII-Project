@@ -13,22 +13,6 @@ class BookRatingReviewService
         $this->db = $db;
     }
 
-    public function createRating(int $userId, int $bookId, int $rating): bool
-    {
-        $stmt = $this->db->prepare("
-        INSERT INTO ratings (user_id, book_id, rating) 
-        VALUES (:user_id, :book_id, :rating)
-    ");
-        $success = $stmt->execute([
-            ':user_id' => $userId,
-            ':book_id' => $bookId,
-            ':rating' => $rating,
-        ]);
-
-        return $success;
-    }
-
-
     public function createReview(int $userId, int $bookId, string $reviewText): bool
     {
         $sql = "INSERT INTO reviews (user_id, book_id, review_text) VALUES (:user_id, :book_id, :review_text)";
@@ -41,22 +25,6 @@ class BookRatingReviewService
         ]);
 
         return $success;
-    }
-
-
-
-    public function saveReview($userId, $bookId, $review): void
-    {
-        $stmt = $this->db->prepare("
-            INSERT INTO reviews (user_id, book_id, review_text) 
-            VALUES (:user_id, :book_id, :review_text) 
-            ON DUPLICATE KEY UPDATE review_text = :review_text
-        ");
-        $stmt->execute([
-            'user_id' => $userId,
-            'book_id' => $bookId,
-            'review_text' => $review,
-        ]);
     }
 
     public function deleteReview($userId, $bookId): void

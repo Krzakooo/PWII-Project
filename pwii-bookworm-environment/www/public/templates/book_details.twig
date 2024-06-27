@@ -52,20 +52,31 @@
                     <h2>Ratings</h2>
                     <ul>
                         {% for rating in ratings %}
-                            <li>{{ rating.rating }} Stars</li>
+                            <li>
+                                {{ rating.rating }} Stars
+                                {% if rating.user_id == userId %}
+                                {% endif %}
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
+                <button onclick="deleteRating({{ rating.id }})">Delete</button>
 
                 <!-- Reviews -->
                 <div class="reviews" id="reviews">
                     <h2>Reviews</h2>
                     <ul>
                         {% for review in reviews %}
-                            <li>{{ review.review_text }}</li>
+                            <li>
+                                {{ review.review_text }}
+                                {% if review.user_id == userId %}
+                                {% endif %}
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
+                <button onclick="deleteReview({{ review.id }})">Delete</button>
+
             {% else %}
                 <h1>Book Not Found</h1>
             {% endif %}
@@ -113,13 +124,10 @@
         function submitRating() {
             const rating = document.getElementById('rating').value;
             const bookId = document.getElementById('bookId').value;
-            //const userId = document.getElementById('userId').value;
-            let userId = 1;
-
-            console.log('Submitting rating:', { rating, bookId, userId });
+            const userId = document.getElementById('userId').value;
 
             fetch(`/catalogue/${bookId}/rate`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -142,22 +150,47 @@
                 });
         }
 
+        function deleteRating(ratingId) {
+            const bookId = document.getElementById('bookId').value;
+            const userId = document.getElementById('userId').value;
+
+            fetch(`/catalogue/${bookId}/rate`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ratingId: ratingId,
+                    userId: userId
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Rating deleted successfully');
+                        fetchRatingsAndReviews();
+                    } else {
+                        alert('Failed to delete rating');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
         function submitReview() {
             const review = document.getElementById('review').value;
             const bookId = document.getElementById('bookId').value;
             const userId = document.getElementById('userId').value;
 
-            console.log('Submitting review:', { review, bookId, userId });
-
             fetch(`/catalogue/${bookId}/review`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    review: review,
+                    userId: userId,
                     bookId: bookId,
-                    userId: userId
+                    review: review
                 })
             })
                 .then(response => {
@@ -166,6 +199,35 @@
                         fetchRatingsAndReviews();
                     } else {
                         alert('Failed to submit review');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to submit review');
+                });
+        }
+
+
+        function deleteReview(reviewId) {
+            const bookId = document.getElementById('bookId').value;
+            const userId = document.getElementById('userId').value;
+
+            fetch(`/catalogue/${bookId}/review`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    reviewId: reviewId,
+                    userId: userId
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Review deleted successfully');
+                        fetchRatingsAndReviews();
+                    } else {
+                        alert('Failed to delete review');
                     }
                 })
                 .catch(error => {
