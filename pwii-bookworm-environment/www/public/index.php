@@ -37,6 +37,8 @@ $app = AppFactory::create();
 
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
+$app->addBodyParsingMiddleware();
+
 
 $twigRenderer = new TwigRenderer();
 $loader = new FilesystemLoader(__DIR__ . '/templates');

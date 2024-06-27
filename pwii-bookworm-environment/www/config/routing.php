@@ -36,6 +36,8 @@ $app = AppFactory::create();
 // Middleware
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
+$app->addBodyParsingMiddleware();
+
 
 // Dependency injection
 $twigRenderer = new TwigRenderer();

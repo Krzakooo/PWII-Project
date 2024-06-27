@@ -20,9 +20,9 @@ class BookRatingReviewService
         VALUES (:user_id, :book_id, :rating)
     ");
         $success = $stmt->execute([
-            'user_id' => $userId,
-            'book_id' => $bookId,
-            'rating' => $rating,
+            ':user_id' => $userId,
+            ':book_id' => $bookId,
+            ':rating' => $rating,
         ]);
 
         return $success;

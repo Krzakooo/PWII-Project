@@ -71,7 +71,7 @@ class BookCatalogueController
 
         $allSearchResults = [];
         $allKeys = [];
-        $maxBooksPerCategory = 20;
+        $maxBooksPerCategory = 5;
 
         foreach ($categories as $category) {
             $category_url = "https://openlibrary.org/search.json?q={$category}&fields=title,author_name,cover_i,key,editions";

@@ -24,10 +24,13 @@ class BookRatingReviewController
     public function createRating(Request $request, Response $response, $args): Response
     {
         try {
-            $userId = $this->authController->getUserIdFromSession();
+            session_start();
+
+            $userId = $_SESSION['user_id'] ?? null;
             $bookId = $args['id'];
             $parsedBody = $request->getParsedBody();
             $rating = $parsedBody['rating'];
+            var_dump($parsedBody);
 
             $success = $this->service->createRating($userId, $bookId, $rating);
 

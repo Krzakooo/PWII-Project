@@ -3,7 +3,7 @@
 
 {% block content %}
 {% include 'menu.twig' %}
-<div class="centered-container-catalogue" >
+<main class="centered-container-catalogue" >
 
     <h1>Book Catalogue</h1>
     <button id="createBookBtn">Create New Book</button>
@@ -35,7 +35,7 @@
             </div>
         {% endfor %}
     </div>
-</div>
+</main>
 
 <script>
     const createBookBtn = document.getElementById('createBookBtn');
