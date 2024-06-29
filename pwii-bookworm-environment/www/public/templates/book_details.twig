@@ -4,8 +4,8 @@
 
 {% block content %}
     {% include 'menu.twig' %}
-    <div class="container">
-        <div class="book-details">
+    <main class="container">
+        <section class="book-details">
             {% if book %}
                 <div>
                     <h1>{{ book.title }}</h1>
@@ -80,8 +80,8 @@
             {% else %}
                 <h1>Book Not Found</h1>
             {% endif %}
-        </div>
-    </div>
+        </section>
+    </main>
     <script>
         function fetchRatingsAndReviews() {
             fetch(`/catalogue/{{ book.id }}/ratings`)

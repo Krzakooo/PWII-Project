@@ -3,7 +3,7 @@
 
 {% block content %}
     {% include 'menu.twig' %}
-    <div class="centered-container" id="user-id" data-user-id="{{ userId }}">
+    <main class="centered-container" id="user-id" data-user-id="{{ userId }}">
         <h1>User Profile</h1>
         {% if flashyMessages %}
             <h2 style="color: red;">{{ flashyMessages }}</h2>
@@ -107,5 +107,5 @@
             });
         </script>
 
-    </div>
+    </main>
 {% endblock %}

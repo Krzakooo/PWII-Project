@@ -213,6 +213,7 @@ class AuthController
         if (!isset($_SESSION['user_id'])) {
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
+
     
         $userId = $_SESSION['user_id'];
         $email = $_POST['email'] ?? null;
@@ -236,8 +237,10 @@ class AuthController
     
             if (empty($errors)) {
                 $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePictureBase64);
-                if ($success) {
+                if ($success && $success != "You can't update email address!") {
                     $responseData['success'] = true;
+                } else if($success == "You can't update email address!") {
+                    $errors[] = $success;
                 } else {
                     $errors[] = "Failed to update user details. Please try again later.";
                 }

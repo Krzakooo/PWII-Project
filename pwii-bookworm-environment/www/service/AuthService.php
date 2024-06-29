@@ -93,6 +93,15 @@ class AuthService
 
     public function updateUserDetails($userId, $email, $username, $profilePicture)
     {
+        $sql = "SELECT email FROM users WHERE id = :userId";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($currentUser && $currentUser['email'] !== $email) {
+            return "You can't update email address!";
+        }
+
         $sql = "UPDATE users SET email = :email, username = :username, profile_picture = :profile_picture WHERE id = :userId";
         $stmt = $this->pdo->prepare($sql);
         $success = $stmt->execute([
@@ -102,7 +111,8 @@ class AuthService
             'userId' => $userId,
         ]);
 
-        return $success;
+        return $success ? true : "Failed to update user details";
     }
+
 
 }

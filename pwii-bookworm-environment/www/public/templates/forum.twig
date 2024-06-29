@@ -3,7 +3,7 @@
         
 {% block content %}
 {% include 'menu.twig' %}
-<div class="centered-container">
+<main class="centered-container">
     <h1>Discussion Forums</h1>
 
     <ul id="forumList">
@@ -30,7 +30,7 @@
     <button class="custom-btn" id="openCreateFormBtn">Create Forum</button>
 
     <!-- Create Forum Modal -->
-    <div id="createFormModal" class="modal">
+    <section id="createFormModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Create Forum</h2>
@@ -42,8 +42,8 @@
                 <button type="submit">Create Forum</button>
             </form>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 <script>
     // Get the <span> element that closes the modal

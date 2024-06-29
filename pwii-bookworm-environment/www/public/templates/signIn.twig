@@ -3,7 +3,7 @@
 
 {% block content %}
 {% include 'menu.twig' %}
-<div class="centered-container">
+<main class="centered-container">
     <h1>Sign In</h1>
     <form class="form" id="sign-in-form" method="post">
         <ul id="error-messages"></ul>
@@ -17,7 +17,7 @@
         </div>
         <button type="submit">Sign In</button>
     </form>
-</div>
+</main>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('sign-in-form').addEventListener('submit', function(event) {

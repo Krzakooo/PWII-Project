@@ -3,7 +3,7 @@
         
 {% block content %}
 {% include 'menu.twig' %}
-<div class="centered-container">
+<main class="centered-container">
     <h1>Sign Up</h1>
     <form class="form" action="/sign-up" method="post" data-cy="sign-up">
         {% if errors is defined and errors %}
@@ -31,5 +31,5 @@
         </div>
         <button type="submit" data-cy="sign-up__btn">Sign Up</button>
     </form>
-</div>
+</main>
 {% endblock %}

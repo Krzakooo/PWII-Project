@@ -288,7 +288,7 @@ a.custom-btn-goto:hover {
     margin-bottom: 40px;
 }
 
-.book-details div {
+.book-details div section {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
@@ -302,7 +302,7 @@ a.custom-btn-goto:hover {
     margin-bottom: 20px;
 }
 
-.search-results div {
+.search-results div section {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }

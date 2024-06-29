@@ -23,7 +23,7 @@
         <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
     </form>
 
-    <div class="categories">
+    <section class="categories">
         {% for category, books in searchResults %}
             <div class="category" data-category="{{ category }}">
                 <h2>{{ category|capitalize }}</h2>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         {% endfor %}
-    </div>
+    </section>
 </main>
 
 <script>
