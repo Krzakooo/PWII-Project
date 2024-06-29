@@ -91,7 +91,7 @@ class AuthService
         return $user ? new User($user['id'], $user['email'], $user['password'], $user['username'], $user['profile_picture']) : null;
     }
 
-    public function updateUserDetails($userId, $email, $username, $profilePicture)
+    public function updateUserDetails($userId, $email, $username)
     {
         $sql = "SELECT email FROM users WHERE id = :userId";
         $stmt = $this->pdo->prepare($sql);
@@ -102,16 +102,24 @@ class AuthService
             return "You can't update email address!";
         }
 
-        $sql = "UPDATE users SET email = :email, username = :username, profile_picture = :profile_picture WHERE id = :userId";
+        $sql = "UPDATE users SET email = :email, username = :username WHERE id = :userId";
         $stmt = $this->pdo->prepare($sql);
         $success = $stmt->execute([
             'email' => $email,
             'username' => $username,
-            'profile_picture' => $profilePicture,
             'userId' => $userId,
         ]);
 
         return $success ? true : "Failed to update user details";
+    }
+
+    public function updateProfilePicture(int $userId, string $profile_picture): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
+        $profile_picture = 'uploads/' . $profile_picture;
+        $success = $stmt->execute(['profile_picture' => $profile_picture, 'id' => $userId]);
+
+        return $success;
     }
 
 

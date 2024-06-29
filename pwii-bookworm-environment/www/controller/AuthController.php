@@ -193,12 +193,13 @@ class AuthController
 
         $user = $this->authService->getUserById($userId);
 
-        $profilePicture = $user->getProfilePicture();
+
+        $profilePictureUrl = $user->getProfilePicture();
         $isLoggedIn = isset($_SESSION['user_id']);
 
         $content = $this->twig->render('profile.twig', [
             'currentUser' => $user,
-            'profilePicture' => $profilePicture,
+            'profilePictureUrl' => $profilePictureUrl,
             'isLoggedIn' => $isLoggedIn,
             'userId' => $userId
         ]);
@@ -214,32 +215,41 @@ class AuthController
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
 
-    
+        $user = $this->authService->getCurrentUser();
         $userId = $_SESSION['user_id'];
-        $email = $_POST['email'] ?? null;
-        $username = $_POST['username'] ?? null;
-        $profilePicture = $_FILES['profilePicture'] ?? null;
+        $data = $request->getParsedBody();
+        $username = $data['username'];
+        $email = $data['email'];
+        
+        $uploadedFiles = $request->getUploadedFiles();
+        $profilePicture = $uploadedFiles['profile_picture'] ?? null;
         $errors = [];
         $responseData = [];
+
+        
         
         if ($email !== null || $username !== null || $profilePicture !== null) {
-            $profilePictureBase64 = null;
     
-            if ($profilePicture !== null) {
-                if ($profilePicture['error'] === UPLOAD_ERR_OK) {
-                    $tempFilePath = $profilePicture['tmp_name'];
-                    $fileContents = file_get_contents($tempFilePath);
-                    $profilePictureBase64 = base64_encode($fileContents);
+            if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
+                $uploadPath = __DIR__ . '/../public/uploads';
+                $fileName = $this->uploadProfilePicture($profilePicture, $uploadPath);
+                if ($fileName) {
+                    $success = $this->authService->updateProfilePicture($user->getId(), $fileName);
+                    if (!$success) {
+                        $errors[] = "Failed to update profile picture. Please try again later.";
+                    }
                 } else {
-                    $errors[] = "File upload error.";
+                    //$errors[] = $fileName;
                 }
+            } else {
+                //$errors[] = $profilePicture;
             }
     
             if (empty($errors)) {
-                $success = $this->authService->updateUserDetails($userId, $email, $username, $profilePictureBase64);
-                if ($success && $success != "You can't update email address!") {
+                $success = $this->authService->updateUserDetails($userId, $email, $username);
+                if ($success && $success !== "You can't update email address!") {
                     $responseData['success'] = true;
-                } else if($success == "You can't update email address!") {
+                } else if($success === "You can't update email address!") {
                     $errors[] = $success;
                 } else {
                     $errors[] = "Failed to update user details. Please try again later.";
@@ -253,8 +263,50 @@ class AuthController
             $responseData['errors'] = $errors;
         }
     
-        $response->getBody()->write(json_encode($responseData));
-        return $response->withHeader('Content-Type', 'application/json');
+        // $response->getBody()->write(json_encode($responseData));
+        // return $response->withHeader('Content-Type', 'application/json');
+        $user = $this->authService->getCurrentUser();
+        $profilePictureUrl = $user->getProfilePicture();
+        $isLoggedIn = isset($_SESSION['user_id']);
+
+        $content = $this->twig->render('profile.twig', [
+            'currentUser' => $user,
+            'profilePictureUrl' => $profilePictureUrl,
+            'isLoggedIn' => $isLoggedIn,
+            'userId' => $userId
+        ]);
+        $response->getBody()->write($content);
+        return $response;
+    }
+
+    private function uploadProfilePicture(UploadedFileInterface $file, string $uploadPath): ?string
+    {
+        if ($file->getSize() > 1048576) {
+            return null;
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+        $fileExtension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+        if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+            return null;
+        }
+
+        $image = getimagesize($file->getStream()->getMetadata('uri'));
+        $width = $image[0];
+        $height = $image[1];
+        if ($width > 400 || $height > 400) {
+            return null;
+        }
+
+        $uuid = uniqid();
+        $newFilename = "{$uuid}.{$fileExtension}";
+
+        try {
+            $file->moveTo("$uploadPath/$newFilename");
+            return $newFilename;
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
 

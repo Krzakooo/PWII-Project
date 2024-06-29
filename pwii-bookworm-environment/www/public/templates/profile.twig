@@ -21,8 +21,8 @@
             {% endif %}
         {% endif %}
 
-        {% if profilePicture %}
-            <img id="profile-picture-display" src="{{ profilePicture }}" alt="Profile Picture" style="max-width: 200px;">
+        {% if profilePictureUrl %}
+            <img id="profile-picture-display" src="{{ profilePictureUrl }}" alt="Profile Picture" style="max-width: 200px;">
         {% else %}
             <img id="no-profile-picture" src="../img/noimg.jpg" alt="Profile Picture" style="max-width: 200px;">
         {% endif %}
@@ -30,8 +30,8 @@
 
         {% if currentUser %}
             <form id="profile_form" class="form" action="/profile" method="POST" enctype="multipart/form-data" data-cy="profile">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email" disabled>
+                <label for="email">Email(unchangable):</label>
+                <input type="email" id="email" name="email" value="{{ currentUser.getEmail() }}" data-cy="profile__email">
 
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" value="{{ currentUser.getUsername() }}" data-cy="profile__username">
@@ -46,7 +46,7 @@
         {% endif %}
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
+            {# document.addEventListener("DOMContentLoaded", function () {
                 const userId = document.getElementById('user-id').getAttribute('data-user-id');
                 console.log('User ID:', userId);
 
@@ -96,6 +96,7 @@
                             console.log(data.success);
                         } else {
                             alert('Failed to update profile: ' + data.errors.join(', '));
+                            console.log(data.errors);
                         }
                     })
                     .catch(error => {
@@ -104,7 +105,7 @@
                     });
                 }
 
-            });
+            }); #}
         </script>
 
     </main>
